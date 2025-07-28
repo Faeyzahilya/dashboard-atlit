@@ -598,7 +598,9 @@ function renderBarChart() {
 updateChart(); // initial load
     }
 
-    init();
+    document.addEventListener("DOMContentLoaded", function () {
+  init();
+});
   </script>
   </div>
 </body>
