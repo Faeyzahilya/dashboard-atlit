@@ -1,14 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Dashboard Atlit Century</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1/dist/chartjs-plugin-annotation.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Dashboard Atlit Century</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1/dist/chartjs-plugin-annotation.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
     .chart-container {
       position: relative;
       width: 100%;
@@ -35,98 +36,92 @@
       }
     }
   </style>
-  <script>
+<script>
     const ChartAnnotation = window['chartjs-plugin-annotation'];
     Chart.register(ChartAnnotation);
     Chart.register(ChartDataLabels);
   </script>
 </head>
 <body class="bg-gray-50 text-gray-900 p-4 sm:p-6 font-sans">
-  <div class="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+<div class="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+<header class="mb-4 sm:mb-6 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+<h1 class="text-2xl sm:text-3xl font-bold text-blue-700 flex items-center gap-2">🏅 Dashboard Atlit Century</h1>
+<p class="text-xs sm:text-sm text-gray-500 mt-1">Ringkasan performa, kehadiran, dan tren latihan.</p>
+</header>
+<!-- Statistik Ringkasan -->
+<div class="grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-4 mb-4 sm:mb-6 text-center" id="statCards"></div>
+<div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 text-left" id="leaderboardContainer">
+<h2 class="text-base sm:text-lg font-semibold mb-2">🏆 Leaderboard Rata-rata Tercepat</h2>
+<ol class="space-y-1 text-sm sm:text-base text-gray-700 list-decimal list-inside" id="leaderboardList">
+<!-- Diisi oleh JavaScript -->
+</ol>
+</div>
 
-    <header class="mb-4 sm:mb-6 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-      <h1 class="text-2xl sm:text-3xl font-bold text-blue-700 flex items-center gap-2">🏅 Dashboard Atlit Century</h1>
-      <p class="text-xs sm:text-sm text-gray-500 mt-1">Ringkasan performa, kehadiran, dan tren latihan.</p>
-    </header>
-
-    <!-- Statistik Ringkasan -->
-    <div id="statCards" class="grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-4 mb-4 sm:mb-6 text-center"></div>
-
-    <!-- Dropdown Filter -->
-    <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 mb-4">
-      <select id="namaAtlet" class="p-2 border rounded dropdown-mobile w-full sm:w-1/3"></select>
-      <select id="jarak" class="p-2 border rounded dropdown-mobile w-full sm:w-1/3"></select>
-    </div>
-
-    <!-- Grafik -->
-    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
-      <div class="chart-container">
-        <canvas id="chartWaktu"></canvas>
-      </div>
-    </div>
-
-    <!-- Grafik Statistik Mingguan -->
-    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 mt-4 sm:mt-6">
-      <div class="flex items-center justify-between mb-2">
-        <h2 class="text-base sm:text-lg font-semibold">📊 Statistik</h2>
-        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">Rolling 28-day mean</span>
-      </div>
-
-      <!-- Switch Statistik Periodik -->
-      <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-        <div class="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-100">
-          <button id="btnWeekly" class="px-3 py-1 rounded-md bg-white shadow text-sm font-medium">Mingguan</button>
-          <button id="btnMonthly" class="px-3 py-1 rounded-md text-sm font-medium">Bulanan</button>
-        </div>
-        <span class="text-xs text-gray-500">Ringkasan jumlah latihan (bar) & rata-rata waktu (garis).</span>
-      </div>
-
-      <div class="chart-container">
-        <canvas id="chartStatistikMingguan"></canvas>
-      </div>
-    </div>
-
-    <!-- Progress Kehadiran -->
-    <div id="progressKehadiranContainer" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
-      <h2 class="text-base sm:text-lg font-semibold mb-2">✅ Progress Kehadiran Bulanan</h2>
-      <div class="w-full bg-gray-200 rounded-full h-4 sm:h-6">
-        <div id="progressKehadiranBar" class="bg-green-500 h-4 sm:h-6 rounded-full text-white text-xs sm:text-sm text-center flex items-center justify-center" style="width: 0%">0%</div>
-      </div>
-      <div id="progressKehadiranText" class="text-xs sm:text-sm text-gray-600 mt-1 text-center">0/20 hari hadir</div>
-    </div>
-
-    <div id="progressContainer" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
-      <h2 class="text-base sm:text-lg font-semibold mb-2">📊 Progress Capaian Target</h2>
-      <div class="w-full bg-gray-200 rounded-full h-4 sm:h-6">
-        <div id="progressBar" class="bg-blue-500 h-4 sm:h-6 rounded-full text-white text-xs sm:text-sm text-center flex items-center justify-center" style="width: 0%">0%</div>
-      </div>
-      <div id="progressText" class="text-xs sm:text-sm text-gray-600 mt-1 text-center">0/0 latihan capai target</div>
-    </div>
-
-    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 mt-4 sm:mt-6">
-      <h2 class="text-base sm:text-lg font-semibold mb-2">🎯 Total Capaian Target per Atlet</h2>
-      <div class="chart-container">
-        <canvas id="chartBarCapai"></canvas>
-      </div>
-    </div>
-
-    <!-- Heatmap Latihan -->
-    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
-      <h2 class="text-base sm:text-lg font-semibold mb-2">🔥 Heatmap Kehadiran Latihan</h2>
-      <div class="heatmap-container">
-        <div id="heatmapContainer" class="heatmap-grid grid gap-1 text-[8px] sm:text-[10px]" style="grid-template-columns: repeat(31, minmax(0.75rem, 1rem));">
-          <!-- Isi heatmap akan dibuat dinamis oleh JavaScript -->
-        </div>
-      </div>
-      <div class="text-xs text-center text-gray-500 mt-2">*Tiap kotak = 1 hari latihan</div>
-    </div>
-
-    <footer class="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-gray-500">
-      &copy; 2025 Atlit Century. All rights reserved.
+<!-- Dropdown Filter -->
+<div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 mb-4">
+<select class="p-2 border rounded dropdown-mobile w-full sm:w-1/3" id="namaAtlet"></select>
+<select class="p-2 border rounded dropdown-mobile w-full sm:w-1/3" id="jarak"></select>
+</div>
+<!-- Grafik -->
+<div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
+<div class="chart-container">
+<canvas id="chartWaktu"></canvas>
+</div>
+</div>
+<!-- Grafik Statistik Mingguan -->
+<div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 mt-4 sm:mt-6">
+<div class="flex items-center justify-between mb-2">
+<h2 class="text-base sm:text-lg font-semibold">📊 Statistik</h2>
+<span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">Rolling 28-day mean</span>
+</div>
+<!-- Switch Statistik Periodik -->
+<div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+<div class="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-100">
+<button class="px-3 py-1 rounded-md bg-white shadow text-sm font-medium" id="btnWeekly">Mingguan</button>
+<button class="px-3 py-1 rounded-md text-sm font-medium" id="btnMonthly">Bulanan</button>
+</div>
+<span class="text-xs text-gray-500">Ringkasan jumlah latihan (bar) &amp; rata-rata waktu (garis).</span>
+</div>
+<div class="chart-container">
+<canvas id="chartStatistikMingguan"></canvas>
+</div>
+</div>
+<!-- Progress Kehadiran -->
+<div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4" id="progressKehadiranContainer">
+<h2 class="text-base sm:text-lg font-semibold mb-2">✅ Progress Kehadiran Bulanan</h2>
+<div class="w-full bg-gray-200 rounded-full h-4 sm:h-6">
+<div class="bg-green-500 h-4 sm:h-6 rounded-full text-white text-xs sm:text-sm text-center flex items-center justify-center" id="progressKehadiranBar" style="width: 0%">0%</div>
+</div>
+<div class="text-xs sm:text-sm text-gray-600 mt-1 text-center" id="progressKehadiranText">0/20 hari hadir</div>
+</div>
+<div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4" id="progressContainer">
+<h2 class="text-base sm:text-lg font-semibold mb-2">📊 Progress Capaian Target</h2>
+<div class="w-full bg-gray-200 rounded-full h-4 sm:h-6">
+<div class="bg-blue-500 h-4 sm:h-6 rounded-full text-white text-xs sm:text-sm text-center flex items-center justify-center" id="progressBar" style="width: 0%">0%</div>
+</div>
+<div class="text-xs sm:text-sm text-gray-600 mt-1 text-center" id="progressText">0/0 latihan capai target</div>
+</div>
+<div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 mt-4 sm:mt-6">
+<h2 class="text-base sm:text-lg font-semibold mb-2">🎯 Total Capaian Target per Atlet</h2>
+<div class="chart-container">
+<canvas id="chartBarCapai"></canvas>
+</div>
+</div>
+<!-- Heatmap Latihan -->
+<div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
+<h2 class="text-base sm:text-lg font-semibold mb-2">🔥 Heatmap Kehadiran Latihan</h2>
+<div class="heatmap-container">
+<div class="heatmap-grid grid gap-1 text-[8px] sm:text-[10px]" id="heatmapContainer" style="grid-template-columns: repeat(31, minmax(0.75rem, 1rem));">
+<!-- Isi heatmap akan dibuat dinamis oleh JavaScript -->
+</div>
+</div>
+<div class="text-xs text-center text-gray-500 mt-2">*Tiap kotak = 1 hari latihan</div>
+</div>
+<footer class="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-gray-500">
+      © 2025 Atlit Century. All rights reserved.
       <div class="mt-1">Developed with ❤️ by Papa Al</div>
-    </footer>
-
-    <script>
+</footer>
+<script>
       const apiBase = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec";
       let dataLatihan = [];
       let targetWaktu = [];
@@ -506,7 +501,30 @@
         progressText.textContent = jumlahCapai + "/" + total + " latihan capai target";
       }
 
-      async function init() {
+      
+      function renderLeaderboard() {
+        const atletList = getUniqueOptions(dataLatihan, "Nama");
+
+        const avgTimes = atletList.map(nama => {
+          const atletData = dataLatihan.filter(d =>
+            d.Nama === nama && parseFloat(d.Waktu) > 0
+          );
+          const total = atletData.length;
+          const rata2 = atletData.reduce((sum, d) => sum + parseFloat(d.Waktu), 0) / total;
+          return { nama, rata2 };
+        }).filter(item => !isNaN(item.rata2));
+
+        avgTimes.sort((a, b) => a.rata2 - b.rata2);
+
+        const top3 = avgTimes.slice(0, 3);
+        const container = document.getElementById("leaderboardList");
+        container.innerHTML = top3.map((item, idx) => 
+          `<li><span class="font-medium">${item.nama}</span> - ${item.rata2.toFixed(2)}s</li>`
+        ).join("");
+      }
+    
+
+async function init() {
         const [latihan, target, absensi] = await Promise.all([
           fetchData("DataLatihan"),
           fetchData("TargetWaktu"),
@@ -539,10 +557,11 @@
         jarakDropdown.addEventListener("change", updateChart);
 
         updateChart();
+        renderLeaderboard();
       }
 
       init();
     </script>
-  </div>
+</div>
 </body>
 </html>
