@@ -4,14 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Atlit Century</title>
-
-  <!-- 📦 Library -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1/dist/chartjs-plugin-annotation.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
-  <!-- ✅ Register plugin (fix GitHub Pages) -->
   <script>
     const ChartAnnotation = window['chartjs-plugin-annotation'];
     Chart.register(ChartAnnotation);
@@ -39,7 +36,6 @@
 
   <script>
     const apiBase = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec";
-
     let dataLatihan = [];
     let targetWaktu = [];
     let chart;
@@ -68,12 +64,9 @@
       return match ? parseFloat(match.Target) : 25.0;
     }
 
-    function renderChart(atlet, jarak, target) {
+    function renderChart(atlet, jarak) {
       const filtered = dataLatihan.filter(item =>
-        item.Nama === atlet &&
-        item.Jarak === jarak &&
-        parseFloat(item.Waktu) > 0
-      );
+        item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0);
       const labels = filtered.map(d => d.Tanggal);
       const waktu = filtered.map(d => parseFloat(d.Waktu));
       const target = getTarget(atlet, jarak);
@@ -154,10 +147,7 @@
       const jarakDropdown = document.getElementById("jarak");
 
       function updateChart() {
-        const nama = namaDropdown.value;
-        const jarak = jarakDropdown.value;
-        const target = getTarget(nama, jarak);
-        renderChart(nama, jarak, target);
+        renderChart(namaDropdown.value, jarakDropdown.value);
       }
 
       namaDropdown.addEventListener("change", updateChart);
