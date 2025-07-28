@@ -27,6 +27,8 @@
   <div class="flex flex-wrap gap-4 mb-4">
     <select id="namaAtlet" class="p-2 border rounded w-1/3"></select>
     <select id="jarak" class="p-2 border rounded w-1/3"></select>
+<input type="date" id="startDate" class="p-2 border rounded w-1/3" />
+<input type="date" id="endDate" class="p-2 border rounded w-1/3" />
   </div>
 
   <!-- Grafik -->
@@ -68,6 +70,14 @@
       return match ? parseFloat(match.Target) : 25.0;
     }
 
+function isInDateRange(tanggal, start, end) {
+  const tgl = new Date(tanggal);
+  if (start && tgl < new Date(start)) return false;
+  if (end && tgl > new Date(end)) return false;
+  return true;
+}
+
+
     function showStatistik(data, target) {
       const total = data.length;
       const tercepat = Math.min(...data);
@@ -90,8 +100,11 @@
     }
 
     function renderChart(atlet, jarak) {
-      const filtered = dataLatihan.filter(item =>
-        item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0);
+      const startDate = document.getElementById("startDate").value;
+const endDate = document.getElementById("endDate").value;
+
+const filtered = dataLatihan.filter(item =>
+        item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0 && isInDateRange(item.Tanggal, startDate, endDate));
       const labels = filtered.map(d => d.Tanggal);
       const waktu = filtered.map(d => parseFloat(d.Waktu));
       const target = getTarget(atlet, jarak);
@@ -167,6 +180,8 @@
 
       namaDropdown.addEventListener("change", updateChart);
       jarakDropdown.addEventListener("change", updateChart);
+document.getElementById("startDate").addEventListener("change", updateChart);
+document.getElementById("endDate").addEventListener("change", updateChart);
 
       updateChart(); // initial load
     }
