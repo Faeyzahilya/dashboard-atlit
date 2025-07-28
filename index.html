@@ -35,11 +35,6 @@
       }
     }
   </style>
-  <script>
-    const ChartAnnotation = window['chartjs-plugin-annotation'];
-    Chart.register(ChartAnnotation);
-    Chart.register(ChartDataLabels);
-  </script>
 </head>
 <body class="bg-gray-50 text-gray-900 p-4 sm:p-6 font-sans">
   <div class="max-w-7xl mx-auto space-y-4 sm:space-y-6">
@@ -127,6 +122,11 @@
     </footer>
 
     <script>
+      // Register plugins before any charts are created
+      const ChartAnnotation = window['chartjs-plugin-annotation'];
+      Chart.register(ChartAnnotation);
+      Chart.register(ChartDataLabels);
+
       const apiBase = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec";
       let dataLatihan = [];
       let targetWaktu = [];
@@ -178,16 +178,16 @@
           </div>`).join("");
       }
 
-    function renderChart(atlet, jarak) {
+      function renderChart(atlet, jarak) {
         const filtered = dataLatihan.filter(item =>
           item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0);
         const labels = filtered.map(d => d.Tanggal);
         const waktu = filtered.map(d => parseFloat(d.Waktu));
         const target = getTarget(atlet, jarak);
         const pointColors = waktu.map(w => (w <= target ? 'green' : 'orange'));
-      
+
         showStatistik(waktu, target);
-      
+
         const data = {
           labels,
           datasets: [{
@@ -201,7 +201,7 @@
             pointBackgroundColor: pointColors
           }]
         };
-      
+
         const config = {
           type: 'line',
           data,
@@ -256,7 +256,7 @@
           },
           plugins: [ChartDataLabels]
         };
-      
+
         if (chart) chart.destroy();
         chart = new Chart(document.getElementById("chartWaktu"), config);
       }
