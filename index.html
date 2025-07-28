@@ -47,6 +47,12 @@
   <div class="bg-white p-4 rounded shadow mb-4">
     <canvas id="chartWaktu" height="100"></canvas>
 
+<!-- Grafik Statistik Mingguan -->
+<div class="bg-white p-4 rounded shadow mb-4 mt-6">
+  <h2 class="text-lg font-semibold mb-2">📊 Statistik Mingguan</h2>
+  <canvas id="chartStatistikMingguan" height="100"></canvas>
+</div>
+
 <!-- Grafik Bar Capaian Target Per Atlet -->
 
 <!-- Progress Bar Target Pribadi -->
@@ -259,6 +265,90 @@ function renderBarChart() {
 
   
 
+
+function renderStatistikMingguan(atlet, jarak) {
+  const startDate = document.getElementById("startDate").value;
+  const endDate = document.getElementById("endDate").value;
+
+  const filtered = dataLatihan.filter(item =>
+    item.Nama === atlet &&
+    item.Jarak === jarak &&
+    parseFloat(item.Waktu) > 0 &&
+    isInDateRange(item.Tanggal, startDate, endDate)
+  );
+
+  const mingguData = {};
+
+  for (const item of filtered) {
+    const date = new Date(item.Tanggal);
+    const mingguAwal = new Date(date);
+    mingguAwal.setDate(date.getDate() - date.getDay()); // Minggu (start of week)
+
+    const key = mingguAwal.toISOString().split("T")[0];
+    if (!mingguData[key]) mingguData[key] = [];
+
+    mingguData[key].push(parseFloat(item.Waktu));
+  }
+
+  const labels = Object.keys(mingguData).sort();
+  const jumlahLatihan = labels.map(k => mingguData[k].length);
+  const rataWaktu = labels.map(k => {
+    const total = mingguData[k].reduce((a, b) => a + b, 0);
+    return (total / mingguData[k].length).toFixed(2);
+  });
+
+  const ctx = document.getElementById("chartStatistikMingguan").getContext("2d");
+  if (window.statistikChart) window.statistikChart.destroy();
+
+  window.statistikChart = new Chart(ctx, {
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Jumlah Latihan',
+          data: jumlahLatihan,
+          backgroundColor: '#6366f1'
+        },
+        {
+          type: 'line',
+          label: 'Rata-rata Waktu (s)',
+          data: rataWaktu,
+          borderColor: '#f59e0b',
+          backgroundColor: '#fcd34d',
+          tension: 0.4,
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      stacked: false,
+      plugins: {
+        legend: { position: 'top' }
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          position: 'left',
+          title: { display: true, text: 'Jumlah Latihan' }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: 'Rata-rata Waktu (s)' }
+        }
+      }
+    }
+  });
+}
+
+
 function updateProgressKehadiran(atlet) {
   const bulan = document.getElementById("bulanAbsensi").value; // format: yyyy-mm
   const bulanPrefix = bulan + "-";
@@ -335,6 +425,7 @@ function updateProgressBar(atlet, jarak) {
 renderBarChart();
 updateProgressBar(namaDropdown.value, jarakDropdown.value);
 updateProgressKehadiran(namaDropdown.value);
+renderStatistikMingguan(namaDropdown.value, jarakDropdown.value);
       }
 
       namaDropdown.addEventListener("change", updateChart);
