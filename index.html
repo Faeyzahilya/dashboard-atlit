@@ -4,10 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Atlit Century</title>
+
+  <!-- 📦 Library -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0/dist/chartjs-plugin-annotation.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1/dist/chartjs-plugin-annotation.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+
+  <!-- ✅ Register plugin (fix GitHub Pages) -->
+  <script>
+    const ChartAnnotation = window['chartjs-plugin-annotation'];
+    Chart.register(ChartAnnotation);
+    Chart.register(ChartDataLabels);
+  </script>
 </head>
 <body class="bg-gray-100 text-gray-800 p-4">
 
@@ -29,9 +38,6 @@
   </footer>
 
   <script>
-    Chart.register(ChartDataLabels);
-    Chart.register(window['chartjs-plugin-annotation']);
-
     const apiBase = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec";
 
     let dataLatihan = [];
@@ -63,7 +69,11 @@
     }
 
     function renderChart(atlet, jarak) {
-      const filtered = dataLatihan.filter(item => item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0);
+      const filtered = dataLatihan.filter(item =>
+        item.Nama === atlet &&
+        item.Jarak === jarak &&
+        parseFloat(item.Waktu) > 0
+      );
       const labels = filtered.map(d => d.Tanggal);
       const waktu = filtered.map(d => parseFloat(d.Waktu));
       const target = getTarget(atlet, jarak);
@@ -143,8 +153,10 @@
       const namaDropdown = document.getElementById("namaAtlet");
       const jarakDropdown = document.getElementById("jarak");
 
-      namaDropdown.addEventListener("change", () => renderChart(namaDropdown.value, jarakDropdown.value));
-      jarakDropdown.addEventListener("change", () => renderChart(namaDropdown.value, jarakDropdown.value));
+      namaDropdown.addEventListener("change", () =>
+        renderChart(namaDropdown.value, jarakDropdown.value));
+      jarakDropdown.addEventListener("change", () =>
+        renderChart(namaDropdown.value, jarakDropdown.value));
 
       renderChart(namaDropdown.value, jarakDropdown.value);
     }
