@@ -40,9 +40,7 @@
 
     <select id="namaAtlet" class="p-2 border rounded w-1/3"></select>
     <select id="jarak" class="p-2 border rounded w-1/3"></select>
-<input type="date" id="startDate" class="p-2 border rounded w-1/3" />
-<input type="date" id="endDate" class="p-2 border rounded w-1/3" />
-  </div>
+</div>
 
   <!-- Grafik -->
 
@@ -172,8 +170,8 @@ function isInDateRange(tanggal, start, end) {
     }
 
     function renderChart(atlet, jarak) {
-      const startDate = document.getElementById("startDate").value;
-const endDate = document.getElementById("endDate").value;
+      const startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : null;
+const endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : null;
 
 const filtered = dataLatihan.filter(item =>
         item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0 && isInDateRange(item.Tanggal, startDate, endDate));
@@ -227,8 +225,8 @@ const filtered = dataLatihan.filter(item =>
 
       
 function renderBarChart() {
-  const startDate = document.getElementById("startDate").value;
-  const endDate = document.getElementById("endDate").value;
+  const startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : null;
+  const endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : null;
 
   const atletList = getUniqueOptions(dataLatihan, "Nama");
 
@@ -350,8 +348,8 @@ function groupByPeriod(items, period) {
 }
 
 function renderStatistikPeriodik(atlet, jarak, period='weekly') {
-  const startDate = document.getElementById("startDate").value;
-  const endDate = document.getElementById("endDate").value;
+  const startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : null;
+  const endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : null;
 
   const filtered = dataLatihan.filter(item =>
     item.Nama === atlet &&
@@ -413,8 +411,8 @@ function initStatistikToggle(atlet, jarak) {
 
 
 function renderStatistikMingguan(atlet, jarak) {
-  const startDate = document.getElementById("startDate").value;
-  const endDate = document.getElementById("endDate").value;
+  const startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : null;
+  const endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : null;
 
   const filtered = dataLatihan.filter(item =>
     item.Nama === atlet &&
@@ -519,8 +517,8 @@ function updateProgressKehadiran(atlet) {
 
 
 function updateProgressBar(atlet, jarak) {
-  const startDate = document.getElementById("startDate").value;
-  const endDate = document.getElementById("endDate").value;
+  const startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : null;
+  const endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : null;
 
   const filtered = dataLatihan.filter(item =>
     item.Nama === atlet &&
