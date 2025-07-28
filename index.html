@@ -134,32 +134,31 @@
     }
 
     async function init() {
-        // Ambil semua data dulu
-        const [latihan, target] = await Promise.all([
-          fetchData("DataLatihan"),
-          fetchData("TargetWaktu")
-        ]);
-        dataLatihan = latihan;
-        targetWaktu = target;
-      
-        // Isi dropdown
-        const atletList = getUniqueOptions(dataLatihan, "Nama");
-        const jarakList = getUniqueOptions(dataLatihan, "Jarak");
-        updateDropdown("namaAtlet", atletList);
-        updateDropdown("jarak", jarakList);
-      
-        const namaDropdown = document.getElementById("namaAtlet");
-        const jarakDropdown = document.getElementById("jarak");
-      
-        namaDropdown.addEventListener("change", () =>
-          renderChart(namaDropdown.value, jarakDropdown.value));
-        jarakDropdown.addEventListener("change", () =>
-          renderChart(namaDropdown.value, jarakDropdown.value));
-      
-        // Panggil renderChart hanya setelah semua data siap
+      const [latihan, target] = await Promise.all([
+        fetchData("DataLatihan"),
+        fetchData("TargetWaktu")
+      ]);
+      dataLatihan = latihan;
+      targetWaktu = target;
+
+      const atletList = getUniqueOptions(dataLatihan, "Nama");
+      const jarakList = getUniqueOptions(dataLatihan, "Jarak");
+
+      updateDropdown("namaAtlet", atletList);
+      updateDropdown("jarak", jarakList);
+
+      const namaDropdown = document.getElementById("namaAtlet");
+      const jarakDropdown = document.getElementById("jarak");
+
+      function updateChart() {
         renderChart(namaDropdown.value, jarakDropdown.value);
       }
 
+      namaDropdown.addEventListener("change", updateChart);
+      jarakDropdown.addEventListener("change", updateChart);
+
+      updateChart(); // render grafik setelah semua data siap
+    }
 
     init();
   </script>
