@@ -7,7 +7,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+  <!-- ✅ REGISTER PLUGINS -->
+  <script>
+    Chart.register(ChartDataLabels);
+    Chart.register(window['chartjs-plugin-annotation']);
+  </script>
 </head>
 <body class="bg-gray-100 text-gray-800 p-4">
 
@@ -120,7 +126,7 @@
             }
           }
         },
-        plugins: [ChartDataLabels, ChartAnnotation]
+        plugins: [ChartDataLabels]
       };
 
       if (chart) chart.destroy();
