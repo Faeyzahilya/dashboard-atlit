@@ -1,105 +1,92 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Atlit Century</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/nouislider@15.6.1/distribute/nouislider.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/nouislider@15.6.1/distribute/nouislider.min.css" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    canvas { background-color: white; border-radius: 10px; }
-    #slider { margin-top: 1rem; }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
 </head>
-<body class="bg-gray-100 font-sans">
-  <div class="max-w-4xl mx-auto py-10 px-4">
-    <h1 class="text-3xl font-bold text-center text-blue-500 mb-8">📊 Dashboard Performa Atlit – 200m</h1>
+<body class="bg-gray-100 text-gray-800 p-4">
 
-    <!-- Filter -->
-    <div class="flex flex-wrap justify-center gap-4 mb-6">
-      <select id="selectNama" class="p-2 border rounded"></select>
-      <select id="selectJarak" class="p-2 border rounded"></select>
-    </div>
+  <header class="mb-6">
+    <h1 class="text-2xl font-bold text-blue-600">🏅 Dashboard Atlit Century</h1>
+  </header>
 
-    <!-- Grafik -->
-    <div class="bg-white shadow p-6 rounded-xl">
-      <canvas id="grafikPerforma" height="300"></canvas>
-      <div id="slider"></div>
-    </div>
-
-    <p class="text-center text-sm text-gray-500 mt-4">Sumber: Google Sheets</p>
+  <div class="flex flex-wrap gap-4 mb-4">
+    <select id="namaAtlet" class="p-2 border rounded w-1/3"></select>
+    <select id="jarak" class="p-2 border rounded w-1/3"></select>
   </div>
 
+  <div class="bg-white p-4 rounded shadow mb-4">
+    <canvas id="chartWaktu" height="100"></canvas>
+  </div>
+
+  <footer class="mt-6 text-center text-sm text-gray-500">
+    &copy; 2025 Atlit Century. All rights reserved.
+  </footer>
+
   <script>
-    const API_BASE = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec";
+    const apiBase = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec";
 
+    let dataLatihan = [];
+    let targetWaktu = [];
     let chart;
-    let allData = [];
-    let targetData = [];
 
-    async function fetchSheet(sheet) {
-      const res = await fetch(`${API_BASE}?sheet=${sheet}`);
+    async function fetchData(sheet) {
+      const res = await fetch(`${apiBase}?sheet=${sheet}`);
       return await res.json();
     }
 
-    function getUniqueValues(data, key) {
+    function getUniqueOptions(data, key) {
       return [...new Set(data.map(item => item[key]))];
     }
 
-    function updateDropdowns(data) {
-      const namaSelect = document.getElementById("selectNama");
-      const jarakSelect = document.getElementById("selectJarak");
-
-      const atletList = getUniqueValues(data, "Nama");
-      const jarakList = getUniqueValues(data, "Jarak");
-
-      namaSelect.innerHTML = atletList.map(n => `<option value="${n}">${n}</option>`).join("");
-      jarakSelect.innerHTML = jarakList.map(j => `<option value="${j}">${j}</option>`).join("");
+    function updateDropdown(id, options) {
+      const dropdown = document.getElementById(id);
+      dropdown.innerHTML = "";
+      options.forEach(opt => {
+        const o = document.createElement("option");
+        o.value = o.textContent = opt;
+        dropdown.appendChild(o);
+      });
     }
 
-    function getTargetWaktu(nama, jarak) {
-      const found = targetData.find(d => d.Nama === nama && d.Jarak === jarak);
-      return found ? parseFloat(found.Target) : 25.0;
+    function getTarget(atlet, jarak) {
+      const match = targetWaktu.find(item => item.Nama === atlet && item.Jarak === jarak);
+      return match ? parseFloat(match.Target) : 25.0; // Default
     }
 
-    function renderChart(data, nama, jarak) {
-      const atletData = data.filter(d => d.Nama === nama && d.Jarak === jarak && parseFloat(d.Waktu) > 0);
-      const labels = atletData.map(d => d.Tanggal);
-      const values = atletData.map(d => parseFloat(d.Waktu));
-      const target = getTargetWaktu(nama, jarak);
+    function renderChart(atlet, jarak) {
+      const filtered = dataLatihan.filter(item => item.Nama === atlet && item.Jarak === jarak);
+      const labels = filtered.map(d => d.Tanggal);
+      const waktu = filtered.map(d => parseFloat(d.Waktu));
+      const target = getTarget(atlet, jarak);
 
-      if (chart) chart.destroy();
+      const pointColors = waktu.map(w => w <= target ? 'green' : 'orange');
 
-      const ctx = document.getElementById('grafikPerforma').getContext('2d');
-      chart = new Chart(ctx, {
+      const data = {
+        labels,
+        datasets: [{
+          label: `Performa ${jarak} - ${atlet}`,
+          data: waktu,
+          borderColor: '#0ea5e9',
+          backgroundColor: '#38bdf8',
+          fill: false,
+          tension: 0.3,
+          pointRadius: 5,
+          pointBackgroundColor: pointColors
+        }]
+      };
+
+      const config = {
         type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: `Performa ${jarak}`,
-            data: values,
-            borderColor: '#3B82F6',
-            backgroundColor: '#3B82F6',
-            tension: 0.4,
-            pointBackgroundColor: values.map(v => v <= target ? 'orange' : 'green'),
-            pointRadius: 6,
-          }]
-        },
+        data,
         options: {
           responsive: true,
           plugins: {
             legend: { display: true },
-            tooltip: {
-              callbacks: {
-                label: ctx => `${ctx.raw.toFixed(2)}s`
-              }
-            },
             annotation: {
               annotations: {
                 line1: {
@@ -111,15 +98,10 @@
                   label: {
                     content: `Target: ${target.toFixed(1)}s`,
                     enabled: true,
-                    position: 'end'
+                    position: "end"
                   }
                 }
               }
-            },
-            datalabels: {
-              color: '#000',
-              align: 'top',
-              formatter: (value) => `${value.toFixed(2)}s`
             }
           },
           scales: {
@@ -132,22 +114,31 @@
             }
           }
         },
-        plugins: [ChartDataLabels]
-      });
+        plugins: [ChartAnnotation]
+      };
+
+      if (chart) chart.destroy();
+      chart = new Chart(document.getElementById("chartWaktu"), config);
     }
 
     async function init() {
-      allData = await fetchSheet("DataLatihan");
-      targetData = await fetchSheet("TargetWaktu");
-      updateDropdowns(allData);
+      dataLatihan = await fetchData("DataLatihan");
+      targetWaktu = await fetchData("TargetWaktu");
 
-      const namaSelect = document.getElementById("selectNama");
-      const jarakSelect = document.getElementById("selectJarak");
+      const atletList = getUniqueOptions(dataLatihan, "Nama");
+      const jarakList = getUniqueOptions(dataLatihan, "Jarak");
 
-      namaSelect.addEventListener("change", () => renderChart(allData, namaSelect.value, jarakSelect.value));
-      jarakSelect.addEventListener("change", () => renderChart(allData, namaSelect.value, jarakSelect.value));
+      updateDropdown("namaAtlet", atletList);
+      updateDropdown("jarak", jarakList);
 
-      renderChart(allData, namaSelect.value, jarakSelect.value);
+      const namaDropdown = document.getElementById("namaAtlet");
+      const jarakDropdown = document.getElementById("jarak");
+
+      namaDropdown.addEventListener("change", () => renderChart(namaDropdown.value, jarakDropdown.value));
+      jarakDropdown.addEventListener("change", () => renderChart(namaDropdown.value, jarakDropdown.value));
+
+      // Initial render
+      renderChart(namaDropdown.value, jarakDropdown.value);
     }
 
     init();
