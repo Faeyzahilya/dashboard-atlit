@@ -32,6 +32,11 @@
   </div>
 
   <!-- Grafik -->
+<!-- Grafik Bar Capaian Target Per Atlet -->
+<div class="bg-white p-4 rounded shadow mb-4">
+  <h2 class="text-lg font-semibold mb-2">🎯 Total Capaian Target per Atlet</h2>
+  <canvas id="chartBarCapai" height="100"></canvas>
+</div>
   <div class="bg-white p-4 rounded shadow mb-4">
     <canvas id="chartWaktu" height="100"></canvas>
   </div>
@@ -153,7 +158,72 @@ const filtered = dataLatihan.filter(item =>
         plugins: [ChartDataLabels]
       };
 
-      if (chart) chart.destroy();
+      
+function renderBarChart() {
+  const startDate = document.getElementById("startDate").value;
+  const endDate = document.getElementById("endDate").value;
+
+  const atletList = getUniqueOptions(dataLatihan, "Nama");
+
+  const capaiData = atletList.map(nama => {
+    const atletData = dataLatihan.filter(d =>
+      d.Nama === nama &&
+      parseFloat(d.Waktu) > 0 &&
+      isInDateRange(d.Tanggal, startDate, endDate)
+    );
+
+    let totalCapai = 0;
+    for (const d of atletData) {
+      const target = getTarget(d.Nama, d.Jarak);
+      if (parseFloat(d.Waktu) <= target) totalCapai++;
+    }
+
+    return { nama, capai: totalCapai };
+  });
+
+  const labels = capaiData.map(d => d.nama);
+  const values = capaiData.map(d => d.capai);
+
+  const ctx = document.getElementById("chartBarCapai").getContext("2d");
+  if (window.barChart) window.barChart.destroy();
+
+  window.barChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Jumlah Capaian Target',
+        data: values,
+        backgroundColor: '#22c55e'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          anchor: 'end',
+          align: 'top',
+          color: '#000',
+          formatter: val => val
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: 'Jumlah Capaian' }
+        },
+        x: {
+          title: { display: true, text: 'Nama Atlet' }
+        }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+}
+
+
+  if (chart) chart.destroy();
       chart = new Chart(document.getElementById("chartWaktu"), config);
     }
 
@@ -176,6 +246,7 @@ const filtered = dataLatihan.filter(item =>
 
       function updateChart() {
         renderChart(namaDropdown.value, jarakDropdown.value);
+renderBarChart();
       }
 
       namaDropdown.addEventListener("change", updateChart);
