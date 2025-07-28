@@ -23,13 +23,8 @@
 
     <!-- Filter -->
     <div class="flex flex-wrap justify-center gap-4 mb-6">
-      <select id="selectNama" class="p-2 border rounded">
-        <option value="Aurora">Aurora</option>
-        <!-- Tambah nama lain di sini -->
-      </select>
-      <select id="selectJarak" class="p-2 border rounded">
-        <option value="200m">200m</option>
-      </select>
+      <select id="selectNama" class="p-2 border rounded"></select>
+      <select id="selectJarak" class="p-2 border rounded"></select>
     </div>
 
     <!-- Grafik -->
@@ -42,70 +37,112 @@
   </div>
 
   <script>
-    const ctx = document.getElementById('grafikPerforma').getContext('2d');
+    const API_URL = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec?sheet=DataLatihan";
 
-    const dataLatihan = [
-      { tanggal: '2025-07-01', waktu: 26.42 },
-      { tanggal: '2025-07-03', waktu: 25.10 },
-      { tanggal: '2025-07-07', waktu: 27.36 },
-      { tanggal: '2025-07-09', waktu: 24.40 },
-      { tanggal: '2025-07-16', waktu: 26.12 }
-    ];
+    let chart;
 
-    const targetWaktu = 25.0;
+    async function fetchData() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      return data.filter(row => row["Waktu"] > 0); // abaikan waktu 0.0
+    }
 
-    const chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: dataLatihan.map(d => d.tanggal),
-        datasets: [{
-          label: 'Performa 200m',
-          data: dataLatihan.map(d => d.waktu),
-          borderColor: '#3B82F6',
-          backgroundColor: '#3B82F6',
-          tension: 0.4,
-          pointBackgroundColor: dataLatihan.map(d => d.waktu <= targetWaktu ? 'green' : 'orange'),
-          pointRadius: 6,
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: true },
-          tooltip: { callbacks: { label: ctx => `${ctx.raw.toFixed(2)}s` } },
-          annotation: {
-            annotations: {
-              line1: {
-                type: 'line',
-                yMin: targetWaktu,
-                yMax: targetWaktu,
-                borderColor: 'red',
-                borderWidth: 2,
-                label: {
-                  content: `Target: ${targetWaktu}s`,
-                  enabled: true,
-                  position: 'end'
+    function getUniqueValues(data, key) {
+      return [...new Set(data.map(item => item[key]))];
+    }
+
+    function updateDropdowns(data) {
+      const namaSelect = document.getElementById("selectNama");
+      const jarakSelect = document.getElementById("selectJarak");
+
+      const atletList = getUniqueValues(data, "Nama");
+      const jarakList = getUniqueValues(data, "Jarak");
+
+      namaSelect.innerHTML = atletList.map(n => `<option value="${n}">${n}</option>`).join("");
+      jarakSelect.innerHTML = jarakList.map(j => `<option value="${j}">${j}</option>`).join("");
+    }
+
+    function renderChart(data, nama, jarak) {
+      const atletData = data.filter(d => d.Nama === nama && d.Jarak === jarak);
+      const labels = atletData.map(d => d.Tanggal);
+      const values = atletData.map(d => parseFloat(d.Waktu));
+      const target = 25.0; // contoh target fix dulu, nanti bisa dari sheet TargetWaktu
+
+      if (chart) chart.destroy();
+
+      const ctx = document.getElementById('grafikPerforma').getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: `Performa ${jarak}`,
+            data: values,
+            borderColor: '#3B82F6',
+            backgroundColor: '#3B82F6',
+            tension: 0.4,
+            pointBackgroundColor: values.map(v => v <= target ? 'green' : 'orange'),
+            pointRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.raw.toFixed(2)}s`
+              }
+            },
+            annotation: {
+              annotations: {
+                line1: {
+                  type: 'line',
+                  yMin: target,
+                  yMax: target,
+                  borderColor: 'red',
+                  borderWidth: 2,
+                  label: {
+                    content: `Target: ${target.toFixed(1)}s`,
+                    enabled: true,
+                    position: 'end'
+                  }
                 }
               }
+            },
+            datalabels: {
+              color: '#000',
+              align: 'top',
+              formatter: (value) => `${value.toFixed(2)}s`
             }
           },
-          datalabels: {
-            color: '#000',
-            align: 'top',
-            formatter: (value) => `${value.toFixed(2)}s`
+          scales: {
+            y: {
+              title: { display: true, text: 'Waktu (detik)' }
+            },
+            x: {
+              title: { display: true, text: 'Tanggal' }
+            }
           }
         },
-        scales: {
-          y: {
-            title: { display: true, text: 'Waktu (detik)' }
-          },
-          x: {
-            title: { display: true, text: 'Tanggal' }
-          }
-        }
-      },
-      plugins: [ChartDataLabels]
-    });
+        plugins: [ChartDataLabels]
+      });
+    }
+
+    async function init() {
+      const data = await fetchData();
+      updateDropdowns(data);
+
+      const namaSelect = document.getElementById("selectNama");
+      const jarakSelect = document.getElementById("selectJarak");
+
+      namaSelect.addEventListener("change", () => renderChart(data, namaSelect.value, jarakSelect.value));
+      jarakSelect.addEventListener("change", () => renderChart(data, namaSelect.value, jarakSelect.value));
+
+      renderChart(data, namaSelect.value, jarakSelect.value);
+    }
+
+    init();
   </script>
 </body>
 </html>
