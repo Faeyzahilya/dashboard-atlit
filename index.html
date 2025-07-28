@@ -68,7 +68,7 @@
       return match ? parseFloat(match.Target) : 25.0;
     }
 
-    function renderChart(atlet, jarak) {
+    function renderChart(atlet, jarak, target) {
       const filtered = dataLatihan.filter(item =>
         item.Nama === atlet &&
         item.Jarak === jarak &&
@@ -153,12 +153,17 @@
       const namaDropdown = document.getElementById("namaAtlet");
       const jarakDropdown = document.getElementById("jarak");
 
-      namaDropdown.addEventListener("change", () =>
-        renderChart(namaDropdown.value, jarakDropdown.value));
-      jarakDropdown.addEventListener("change", () =>
-        renderChart(namaDropdown.value, jarakDropdown.value));
+      function updateChart() {
+        const nama = namaDropdown.value;
+        const jarak = jarakDropdown.value;
+        const target = getTarget(nama, jarak);
+        renderChart(nama, jarak, target);
+      }
 
-      renderChart(namaDropdown.value, jarakDropdown.value);
+      namaDropdown.addEventListener("change", updateChart);
+      jarakDropdown.addEventListener("change", updateChart);
+
+      updateChart();
     }
 
     init();
