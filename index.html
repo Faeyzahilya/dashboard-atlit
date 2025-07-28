@@ -178,83 +178,88 @@
           </div>`).join("");
       }
 
-      function renderChart(atlet, jarak) {
-  const filtered = dataLatihan.filter(item =>
-    item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0);
-  const labels = filtered.map(d => d.Tanggal);
-  const waktu = filtered.map(d => parseFloat(d.Waktu));
-  const target = getTarget(atlet, jarak);
-  const pointColors = waktu.map(w => (w <= target ? 'green' : 'orange'));
-
-  showStatistik(waktu, target);
-
-  const data = {
-    labels,
-    datasets: [{
-      label: `Performa ${jarak} - ${atlet}`,
-      data: waktu,
-      borderColor: '#0ea5e9',
-      backgroundColor: '#38bdf8',
-      fill: false,
-      tension: 0.3,
-      pointRadius: 5,
-      pointBackgroundColor: pointColors
-    }]
-  };
-
-  const config = {
-    type: 'line',
-    data,
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true },
-        datalabels: {
-          color: '#000',
-          anchor: 'end',
-          align: 'top',
-          formatter: value => `${value.toFixed(2)}s`,
-          font: {
-            size: window.innerWidth < 640 ? 10 : 12
-          }
-        },
-        annotation: {
-          annotations: {
-            targetLine: {
-              type: 'line',
-              yMin: target,
-              yMax: target,
-              borderColor: 'rgb(255, 99, 132)',
-              borderWidth: 2,
-              borderDash: [6, 6],
-              label: {
-                content: `Target: ${target}s`,
-                enabled: true,
-                position: 'right'
+    function renderChart(atlet, jarak) {
+        const filtered = dataLatihan.filter(item =>
+          item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0);
+        const labels = filtered.map(d => d.Tanggal);
+        const waktu = filtered.map(d => parseFloat(d.Waktu));
+        const target = getTarget(atlet, jarak);
+        const pointColors = waktu.map(w => (w <= target ? 'green' : 'orange'));
+      
+        showStatistik(waktu, target);
+      
+        const data = {
+          labels,
+          datasets: [{
+            label: `Performa ${jarak} - ${atlet}`,
+            data: waktu,
+            borderColor: '#0ea5e9',
+            backgroundColor: '#38bdf8',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 5,
+            pointBackgroundColor: pointColors
+          }]
+        };
+      
+        const config = {
+          type: 'line',
+          data,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: true },
+              datalabels: {
+                color: '#000',
+                anchor: 'end',
+                align: 'top',
+                formatter: value => `${value.toFixed(2)}s`,
+                font: {
+                  size: window.innerWidth < 640 ? 10 : 12
+                }
+              },
+              annotation: {
+                annotations: {
+                  targetLine: {
+                    type: 'line',
+                    yMin: target,
+                    yMax: target,
+                    borderColor: 'red',
+                    borderWidth: 2,
+                    borderDash: [6, 6],
+                    label: {
+                      content: `Target: ${target}s`,
+                      enabled: true,
+                      position: 'right',
+                      backgroundColor: 'rgba(255,255,255,0.8)',
+                      color: 'red',
+                      font: {
+                        weight: 'bold'
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                reverse: true,
+                title: { display: true, text: 'Waktu (detik)' },
+                min: Math.min(...waktu) - 1,
+                max: Math.max(Math.max(...waktu), target) + 1
+              },
+              x: {
+                title: { display: true, text: 'Tanggal' }
               }
             }
-          }
-        }
-      },
-      scales: {
-        y: {
-          reverse: true,
-          title: { display: true, text: 'Waktu (detik)' },
-          suggestedMin: target - 5, // Memberi jarak 5 detik di bawah target
-          suggestedMax: Math.max(...waktu) + 2 // Memberi jarak 2 detik di atas waktu tertinggi
-        },
-        x: {
-          title: { display: true, text: 'Tanggal' }
-        }
+          },
+          plugins: [ChartDataLabels]
+        };
+      
+        if (chart) chart.destroy();
+        chart = new Chart(document.getElementById("chartWaktu"), config);
       }
-    },
-    plugins: [ChartDataLabels]
-  };
-
-  if (chart) chart.destroy();
-  chart = new Chart(document.getElementById("chartWaktu"), config);
-}
 
       function renderBarChart() {
         const atletList = getUniqueOptions(dataLatihan, "Nama");
