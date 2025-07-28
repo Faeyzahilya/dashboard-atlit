@@ -3,172 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Atlit Century</title>
+  <title>Kalender Kehadiran Atlit</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1/dist/chartjs-plugin-annotation.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-  <script>
-    const ChartAnnotation = window['chartjs-plugin-annotation'];
-    Chart.register(ChartAnnotation);
-    Chart.register(ChartDataLabels);
-  </script>
+  <style>
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .day-box {
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .hadir { background-color: #4ade80; color: white; }     /* Hijau */
+    .tidak { background-color: #f87171; color: white; }     /* Merah */
+    .kosong { background-color: #e5e7eb; color: #555; }     /* Abu */
+  </style>
 </head>
 <body class="bg-gray-100 text-gray-800 p-4">
 
   <header class="mb-6">
-    <h1 class="text-2xl font-bold text-blue-600">🏅 Dashboard Atlit Century</h1>
+    <h1 class="text-2xl font-bold text-blue-600">📅 Kalender Kehadiran Atlit</h1>
   </header>
 
-  <!-- Statistik Ringkasan -->
-  <div id="statCards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-center"></div>
-
-  <!-- Dropdown Filter -->
-  <div class="flex flex-wrap gap-4 mb-4">
-    <select id="namaAtlet" class="p-2 border rounded w-1/3"></select>
-    <select id="jarak" class="p-2 border rounded w-1/3"></select>
+  <!-- Dropdown Nama -->
+  <div class="mb-4">
+    <label class="block text-sm mb-1">Pilih Atlet:</label>
+    <select id="namaDropdown" class="p-2 border rounded w-1/3"></select>
   </div>
 
-  <!-- Grafik -->
-  <div class="bg-white p-4 rounded shadow mb-4">
-    <canvas id="chartWaktu" height="100"></canvas>
+  <!-- Slider Bulan -->
+  <div class="mb-4 flex items-center gap-4">
+    <label class="text-sm">Pilih Bulan:</label>
+    <input type="range" min="0" max="11" value="6" id="monthSlider" class="w-full" />
+    <span id="bulanLabel" class="text-sm w-24 text-right"></span>
   </div>
+
+  <!-- Kalender -->
+  <div id="calendar" class="calendar-grid bg-white p-4 rounded shadow"></div>
 
   <footer class="mt-6 text-center text-sm text-gray-500">
-    &copy; 2025 Atlit Century. All rights reserved.
+    &copy; 2025 Kalender Kehadiran. All rights reserved.
   </footer>
 
   <script>
     const apiBase = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec";
-    let dataLatihan = [];
-    let targetWaktu = [];
-    let chart;
+    let absensiData = [];
+    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-    async function fetchData(sheet) {
-      const res = await fetch(`${apiBase}?sheet=${sheet}`);
+    async function fetchAbsensi() {
+      const res = await fetch(apiBase + "?sheet=Absensi");
       return await res.json();
     }
 
-    function getUniqueOptions(data, key) {
-      return [...new Set(data.map(item => item[key]))];
+    function getUniqueNames(data) {
+      return [...new Set(data.map(d => d.Nama))];
     }
 
-    function updateDropdown(id, options) {
-      const dropdown = document.getElementById(id);
-      dropdown.innerHTML = "";
+    function updateDropdown(options) {
+      const select = document.getElementById("namaDropdown");
+      select.innerHTML = "";
       options.forEach(opt => {
         const o = document.createElement("option");
         o.value = o.textContent = opt;
-        dropdown.appendChild(o);
+        select.appendChild(o);
       });
     }
 
-    function getTarget(atlet, jarak) {
-      const match = targetWaktu.find(item => item.Nama === atlet && item.Jarak === jarak);
-      return match ? parseFloat(match.Target) : 25.0;
-    }
+    function renderCalendar(nama, bulanIndex) {
+      const container = document.getElementById("calendar");
+      container.innerHTML = "";
 
-    function showStatistik(data, target) {
-      const total = data.length;
-      const tercepat = Math.min(...data);
-      const rata2 = data.reduce((a, b) => a + b, 0) / total;
-      const jumlahCapaiTarget = data.filter(v => v <= target).length;
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = bulanIndex;
+      const firstDay = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
 
-      const cardData = [
-        { label: "👟 Total Latihan", value: total },
-        { label: "🏁 Waktu Tercepat", value: tercepat.toFixed(2) + "s" },
-        { label: "📈 Rata-rata", value: rata2.toFixed(2) + "s" },
-        { label: "🎯 Capaian Target", value: jumlahCapaiTarget + "x" },
-      ];
+      const dataAtlet = absensiData.filter(item => item.Nama === nama);
+      const mapTanggal = {};
+      dataAtlet.forEach(item => {
+        const tgl = new Date(item.Tanggal);
+        if (tgl.getMonth() === month) {
+          mapTanggal[tgl.getDate()] = item.Status.toLowerCase().includes("hadir") ? "hadir" : "tidak";
+        }
+      });
 
-      const container = document.getElementById("statCards");
-      container.innerHTML = cardData.map(c => `
-        <div class="bg-white p-4 rounded shadow">
-          <div class="text-sm text-gray-500">${c.label}</div>
-          <div class="text-xl font-bold text-blue-600">${c.value}</div>
-        </div>`).join("");
-    }
+      // padding awal minggu
+      for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+        container.innerHTML += `<div></div>`;
+      }
 
-    function renderChart(atlet, jarak) {
-      const filtered = dataLatihan.filter(item =>
-        item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0);
-      const labels = filtered.map(d => d.Tanggal);
-      const waktu = filtered.map(d => parseFloat(d.Waktu));
-      const target = getTarget(atlet, jarak);
-      const pointColors = waktu.map(w => (w <= target ? 'green' : 'orange'));
+      // tampilkan tanggal
+      for (let i = 1; i <= totalDays; i++) {
+        const status = mapTanggal[i] || "kosong";
+        container.innerHTML += `<div class="day-box ${status}">${i}</div>`;
+      }
 
-      showStatistik(waktu, target);
-
-      const data = {
-        labels,
-        datasets: [{
-          label: `Performa ${jarak} - ${atlet}`,
-          data: waktu,
-          borderColor: '#0ea5e9',
-          backgroundColor: '#38bdf8',
-          fill: false,
-          tension: 0.3,
-          pointRadius: 5,
-          pointBackgroundColor: pointColors
-        }]
-      };
-
-      const config = {
-        type: 'line',
-        data,
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: true },
-            datalabels: {
-              color: '#000',
-              anchor: 'end',
-              align: 'top',
-              formatter: value => `${value.toFixed(2)}s`
-            }
-          },
-          scales: {
-            y: {
-              reverse: true,
-              title: { display: true, text: 'Waktu (detik)' }
-            },
-            x: {
-              title: { display: true, text: 'Tanggal' }
-            }
-          }
-        },
-        plugins: [ChartDataLabels]
-      };
-
-      if (chart) chart.destroy();
-      chart = new Chart(document.getElementById("chartWaktu"), config);
+      document.getElementById("bulanLabel").textContent = `${monthNames[bulanIndex]} ${year}`;
     }
 
     async function init() {
-      const [latihan, target] = await Promise.all([
-        fetchData("DataLatihan"),
-        fetchData("TargetWaktu")
-      ]);
-      dataLatihan = latihan;
-      targetWaktu = target;
+      absensiData = await fetchAbsensi();
+      const namaList = getUniqueNames(absensiData);
+      updateDropdown(namaList);
 
-      const atletList = getUniqueOptions(dataLatihan, "Nama");
-      const jarakList = getUniqueOptions(dataLatihan, "Jarak");
+      const namaDropdown = document.getElementById("namaDropdown");
+      const monthSlider = document.getElementById("monthSlider");
 
-      updateDropdown("namaAtlet", atletList);
-      updateDropdown("jarak", jarakList);
+      namaDropdown.addEventListener("change", () => renderCalendar(namaDropdown.value, parseInt(monthSlider.value)));
+      monthSlider.addEventListener("input", () => renderCalendar(namaDropdown.value, parseInt(monthSlider.value)));
 
-      const namaDropdown = document.getElementById("namaAtlet");
-      const jarakDropdown = document.getElementById("jarak");
-
-      function updateChart() {
-        renderChart(namaDropdown.value, jarakDropdown.value);
-      }
-
-      namaDropdown.addEventListener("change", updateChart);
-      jarakDropdown.addEventListener("change", updateChart);
-
-      updateChart(); // initial load
+      renderCalendar(namaDropdown.value, parseInt(monthSlider.value));
     }
 
     init();
