@@ -14,10 +14,12 @@
     Chart.register(ChartDataLabels);
   </script>
 </head>
-<body class="bg-gray-50 text-gray-900 p-6 font-sans space-y-4">
+<body class="bg-gray-50 text-gray-900 p-6 font-sans">
+  <div class="max-w-7xl mx-auto space-y-6">
 
-  <header class="mb-6">
+  <header class="mb-6 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
     <h1 class="text-3xl font-bold text-blue-700 flex items-center gap-2">🏅 Dashboard Atlit Century</h1>
+  <p class="text-sm text-gray-500 mt-1">Ringkasan performa, kehadiran, dan tren latihan.</p>
   </header>
 
   <!-- Statistik Ringkasan -->
@@ -44,12 +46,22 @@
 
   <!-- Grafik -->
 
-  <div class="bg-white p-4 rounded shadow mb-4">
+  <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
     <canvas id="chartWaktu" height="100"></canvas>
 
 <!-- Grafik Statistik Mingguan -->
-<div class="bg-white p-4 rounded shadow mb-4 mt-6">
-  <h2 class="text-lg font-semibold mb-2">📊 Statistik Mingguan</h2>
+<div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 mt-6">
+  <h2 class="text-lg font-semibold mb-2">📊 Statistik</h2>
+
+<!-- Switch Statistik Periodik -->
+<div class="flex items-center gap-2 mb-2">
+  <div class="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-100">
+    <button id="btnWeekly" class="px-3 py-1 rounded-md bg-white shadow text-sm font-medium">Mingguan</button>
+    <button id="btnMonthly" class="px-3 py-1 rounded-md text-sm font-medium">Bulanan</button>
+  </div>
+  <span class="text-xs text-gray-500">Ringkasan jumlah latihan (bar) & rata-rata waktu (garis).</span>
+</div>
+
   <canvas id="chartStatistikMingguan" height="100"></canvas>
 </div>
 
@@ -58,7 +70,7 @@
 <!-- Progress Bar Target Pribadi -->
 
 <!-- Progress Kehadiran -->
-<div id="progressKehadiranContainer" class="bg-white p-4 rounded shadow mb-4">
+<div id="progressKehadiranContainer" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
   <h2 class="text-lg font-semibold mb-2">✅ Progress Kehadiran Bulanan</h2>
   <div class="w-full bg-gray-200 rounded-full h-6">
     <div id="progressKehadiranBar" class="bg-green-500 h-6 rounded-full text-white text-sm text-center" style="width: 0%">0%</div>
@@ -66,7 +78,7 @@
   <div id="progressKehadiranText" class="text-sm text-gray-600 mt-1 text-center">0/20 hari hadir</div>
 </div>
 
-<div id="progressContainer" class="bg-white p-4 rounded shadow mb-4">
+<div id="progressContainer" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
   <h2 class="text-lg font-semibold mb-2">📊 Progress Capaian Target</h2>
   <div class="w-full bg-gray-200 rounded-full h-6">
     <div id="progressBar" class="bg-blue-500 h-6 rounded-full text-white text-sm text-center" style="width: 0%">0%</div>
@@ -74,7 +86,7 @@
   <div id="progressText" class="text-sm text-gray-600 mt-1 text-center">0/0 latihan capai target</div>
 </div>
 
-<div class="bg-white p-4 rounded shadow mb-4 mt-6">
+<div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 mt-6">
   <h2 class="text-lg font-semibold mb-2">🎯 Total Capaian Target per Atlet</h2>
   <canvas id="chartBarCapai" height="100"></canvas>
 </div>
@@ -82,9 +94,9 @@
 
   
 <!-- Heatmap Latihan -->
-<div class="bg-white p-4 rounded shadow mb-4">
+<div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
   <h2 class="text-lg font-semibold mb-2">🔥 Heatmap Kehadiran Latihan</h2>
-  <div id="heatmapContainer" class="grid grid-cols-53 gap-1 text-[10px]">
+  <div id="heatmapContainer" class="grid gap-1 text-[10px]" style="grid-template-columns: repeat(31, 1rem);">
     <!-- Isi heatmap akan dibuat dinamis oleh JavaScript -->
   </div>
   <div class="text-xs text-center text-gray-500 mt-2">*Tiap kotak = 1 hari latihan</div>
@@ -148,7 +160,7 @@ function isInDateRange(tanggal, start, end) {
 
       const container = document.getElementById("statCards");
       container.innerHTML = cardData.map(c => `
-        <div class="bg-white p-4 rounded shadow">
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-left">
           <div class="text-sm text-gray-500">${c.label}</div>
           <div class="text-xl font-bold text-blue-600">${c.value}</div>
         </div>`).join("");
@@ -299,6 +311,7 @@ function renderHeatmap(atlet) {
   const month = parseInt(bulan.split("-")[1]) - 1;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+  container.style.gridTemplateColumns = `repeat(${daysInMonth}, 1rem)`;
   for (let i = 1; i <= daysInMonth; i++) {
     const tanggal = `${bulan}-${String(i).padStart(2, "0")}`;
     const hadir = hariMap[tanggal];
@@ -308,6 +321,89 @@ function renderHeatmap(atlet) {
       }"></div>
     `;
   }
+}
+
+
+
+function groupByPeriod(items, period) {
+  const buckets = {};
+  for (const item of items) {
+    const d = new Date(item.Tanggal);
+    let key;
+    if (period === 'monthly') {
+      key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}`;
+    } else {
+      // weekly (start on Sunday)
+      const start = new Date(d);
+      start.setDate(d.getDate() - d.getDay());
+      key = start.toISOString().split("T")[0];
+    }
+    if (!buckets[key]) buckets[key] = [];
+    buckets[key].push(parseFloat(item.Waktu));
+  }
+  return buckets;
+}
+
+function renderStatistikPeriodik(atlet, jarak, period='weekly') {
+  const startDate = document.getElementById("startDate").value;
+  const endDate = document.getElementById("endDate").value;
+
+  const filtered = dataLatihan.filter(item =>
+    item.Nama === atlet &&
+    item.Jarak === jarak &&
+    parseFloat(item.Waktu) > 0 &&
+    isInDateRange(item.Tanggal, startDate, endDate)
+  );
+
+  const buckets = groupByPeriod(filtered, period);
+  const labels = Object.keys(buckets).sort();
+  const jumlahLatihan = labels.map(k => buckets[k].length);
+  const rataWaktu = labels.map(k => {
+    const arr = buckets[k];
+    const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+    return Number(avg.toFixed(2));
+  });
+
+  const ctx = document.getElementById("chartStatistikMingguan").getContext("2d");
+  if (window.statistikChart) window.statistikChart.destroy();
+
+  window.statistikChart = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        { type: 'bar', label: 'Jumlah Latihan', data: jumlahLatihan, backgroundColor: '#0f766e' },
+        { type: 'line', label: 'Rata-rata Waktu (s)', data: rataWaktu, borderColor: '#334155', backgroundColor: '#94a3b8', tension: 0.35, yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: { type: 'linear', position: 'left', title: { display: true, text: 'Jumlah Latihan' } },
+        y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Rata-rata Waktu (s)' } }
+      }
+    }
+  });
+}
+
+// Toggle handlers
+function initStatistikToggle(atlet, jarak) {
+  const btnWeekly = document.getElementById('btnWeekly');
+  const btnMonthly = document.getElementById('btnMonthly');
+  function setActive(which) {
+    if (!btnWeekly || !btnMonthly) return;
+    if (which === 'weekly') {
+      btnWeekly.classList.add('bg-white','shadow');
+      btnMonthly.classList.remove('bg-white','shadow');
+    } else {
+      btnMonthly.classList.add('bg-white','shadow');
+      btnWeekly.classList.remove('bg-white','shadow');
+    }
+  }
+  btnWeekly?.addEventListener('click', () => { setActive('weekly'); renderStatistikPeriodik(atlet, jarak, 'weekly'); });
+  btnMonthly?.addEventListener('click', () => { setActive('monthly'); renderStatistikPeriodik(atlet, jarak, 'monthly'); });
+  setActive('weekly');
 }
 
 
@@ -471,7 +567,8 @@ renderBarChart();
 updateProgressBar(namaDropdown.value, jarakDropdown.value);
 updateProgressKehadiran(namaDropdown.value);
 renderHeatmap(namaDropdown.value);
-renderStatistikMingguan(namaDropdown.value, jarakDropdown.value);
+renderStatistikPeriodik(namaDropdown.value, jarakDropdown.value, "weekly");
+initStatistikToggle(namaDropdown.value, jarakDropdown.value);
       }
 
       namaDropdown.addEventListener("change", updateChart);
@@ -485,5 +582,6 @@ document.getElementById("bulanAbsensi").addEventListener("change", updateChart);
 
     init();
   </script>
+  </div>
 </body>
 </html>
