@@ -27,85 +27,66 @@
 
   <!-- Dropdown Filter -->
   <div class="flex flex-wrap gap-4 mb-4">
-<select id="bulanAbsensi" class="p-2 border rounded w-1/3">
-  <option value="2025-01">Januari 2025</option>
-  <option value="2025-02">Februari 2025</option>
-  <option value="2025-03">Maret 2025</option>
-  <option value="2025-04">April 2025</option>
-  <option value="2025-05">Mei 2025</option>
-  <option value="2025-06">Juni 2025</option>
-  <option value="2025-07" selected>Juli 2025</option>
-  <option value="2025-08">Agustus 2025</option>
-</select>
-
     <select id="namaAtlet" class="p-2 border rounded w-1/3"></select>
     <select id="jarak" class="p-2 border rounded w-1/3"></select>
-</div>
+  </div>
 
   <!-- Grafik -->
-
   <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
     <canvas id="chartWaktu" height="100"></canvas>
-
-<!-- Grafik Statistik Mingguan -->
-<div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 mt-6">
-  
-<div class="flex items-center justify-between mb-2">
-  <h2 class="text-lg font-semibold">📊 Statistik</h2>
-  <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">Rolling 28-day mean</span>
-</div>
-
-
-<!-- Switch Statistik Periodik -->
-<div class="flex items-center gap-2 mb-2">
-  <div class="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-100">
-    <button id="btnWeekly" class="px-3 py-1 rounded-md bg-white shadow text-sm font-medium">Mingguan</button>
-    <button id="btnMonthly" class="px-3 py-1 rounded-md text-sm font-medium">Bulanan</button>
-  </div>
-  <span class="text-xs text-gray-500">Ringkasan jumlah latihan (bar) & rata-rata waktu (garis).</span>
-</div>
-
-  <canvas id="chartStatistikMingguan" height="100"></canvas>
-</div>
-
-<!-- Grafik Bar Capaian Target Per Atlet -->
-
-<!-- Progress Bar Target Pribadi -->
-
-<!-- Progress Kehadiran -->
-<div id="progressKehadiranContainer" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
-  <h2 class="text-lg font-semibold mb-2">✅ Progress Kehadiran Bulanan</h2>
-  <div class="w-full bg-gray-200 rounded-full h-6">
-    <div id="progressKehadiranBar" class="bg-green-500 h-6 rounded-full text-white text-sm text-center" style="width: 0%">0%</div>
-  </div>
-  <div id="progressKehadiranText" class="text-sm text-gray-600 mt-1 text-center">0/20 hari hadir</div>
-</div>
-
-<div id="progressContainer" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
-  <h2 class="text-lg font-semibold mb-2">📊 Progress Capaian Target</h2>
-  <div class="w-full bg-gray-200 rounded-full h-6">
-    <div id="progressBar" class="bg-blue-500 h-6 rounded-full text-white text-sm text-center" style="width: 0%">0%</div>
-  </div>
-  <div id="progressText" class="text-sm text-gray-600 mt-1 text-center">0/0 latihan capai target</div>
-</div>
-
-<div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 mt-6">
-  <h2 class="text-lg font-semibold mb-2">🎯 Total Capaian Target per Atlet</h2>
-  <canvas id="chartBarCapai" height="100"></canvas>
-</div>
   </div>
 
-  
-<!-- Heatmap Latihan -->
-<div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
-  <h2 class="text-lg font-semibold mb-2">🔥 Heatmap Kehadiran Latihan</h2>
-  <div id="heatmapContainer" class="grid gap-1 text-[10px]" style="grid-template-columns: repeat(31, 1rem);">
-    <!-- Isi heatmap akan dibuat dinamis oleh JavaScript -->
-  </div>
-  <div class="text-xs text-center text-gray-500 mt-2">*Tiap kotak = 1 hari latihan</div>
-</div>
+  <!-- Grafik Statistik Mingguan -->
+  <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 mt-6">
+    <div class="flex items-center justify-between mb-2">
+      <h2 class="text-lg font-semibold">📊 Statistik</h2>
+      <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">Rolling 28-day mean</span>
+    </div>
 
-<footer class="mt-6 text-center text-sm text-gray-500">
+    <!-- Switch Statistik Periodik -->
+    <div class="flex items-center gap-2 mb-2">
+      <div class="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-100">
+        <button id="btnWeekly" class="px-3 py-1 rounded-md bg-white shadow text-sm font-medium">Mingguan</button>
+        <button id="btnMonthly" class="px-3 py-1 rounded-md text-sm font-medium">Bulanan</button>
+      </div>
+      <span class="text-xs text-gray-500">Ringkasan jumlah latihan (bar) & rata-rata waktu (garis).</span>
+    </div>
+
+    <canvas id="chartStatistikMingguan" height="100"></canvas>
+  </div>
+
+  <!-- Progress Kehadiran -->
+  <div id="progressKehadiranContainer" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
+    <h2 class="text-lg font-semibold mb-2">✅ Progress Kehadiran Bulanan</h2>
+    <div class="w-full bg-gray-200 rounded-full h-6">
+      <div id="progressKehadiranBar" class="bg-green-500 h-6 rounded-full text-white text-sm text-center" style="width: 0%">0%</div>
+    </div>
+    <div id="progressKehadiranText" class="text-sm text-gray-600 mt-1 text-center">0/20 hari hadir</div>
+  </div>
+
+  <div id="progressContainer" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
+    <h2 class="text-lg font-semibold mb-2">📊 Progress Capaian Target</h2>
+    <div class="w-full bg-gray-200 rounded-full h-6">
+      <div id="progressBar" class="bg-blue-500 h-6 rounded-full text-white text-sm text-center" style="width: 0%">0%</div>
+    </div>
+    <div id="progressText" class="text-sm text-gray-600 mt-1 text-center">0/0 latihan capai target</div>
+  </div>
+
+  <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 mt-6">
+    <h2 class="text-lg font-semibold mb-2">🎯 Total Capaian Target per Atlet</h2>
+    <canvas id="chartBarCapai" height="100"></canvas>
+  </div>
+
+  <!-- Heatmap Latihan -->
+  <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4">
+    <h2 class="text-lg font-semibold mb-2">🔥 Heatmap Kehadiran Latihan</h2>
+    <div id="heatmapContainer" class="grid gap-1 text-[10px]" style="grid-template-columns: repeat(31, 1rem);">
+      <!-- Isi heatmap akan dibuat dinamis oleh JavaScript -->
+    </div>
+    <div class="text-xs text-center text-gray-500 mt-2">*Tiap kotak = 1 hari latihan</div>
+  </div>
+
+  <footer class="mt-6 text-center text-sm text-gray-500">
     &copy; 2025 Atlit Century. All rights reserved.
   </footer>
 
@@ -114,7 +95,7 @@
     let dataLatihan = [];
     let targetWaktu = [];
     let chart;
-let dataAbsensi = [];
+    let dataAbsensi = [];
 
     async function fetchData(sheet) {
       const res = await fetch(`${apiBase}?sheet=${sheet}`);
@@ -140,14 +121,6 @@ let dataAbsensi = [];
       return match ? parseFloat(match.Target) : 25.0;
     }
 
-function isInDateRange(tanggal, start, end) {
-  const tgl = new Date(tanggal);
-  if (start && tgl < new Date(start)) return false;
-  if (end && tgl > new Date(end)) return false;
-  return true;
-}
-
-
     function showStatistik(data, target) {
       const total = data.length;
       const tercepat = Math.min(...data);
@@ -170,11 +143,8 @@ function isInDateRange(tanggal, start, end) {
     }
 
     function renderChart(atlet, jarak) {
-      const startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : null;
-const endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : null;
-
-const filtered = dataLatihan.filter(item =>
-        item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0 && isInDateRange(item.Tanggal, startDate, endDate));
+      const filtered = dataLatihan.filter(item =>
+        item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0);
       const labels = filtered.map(d => d.Tanggal);
       const waktu = filtered.map(d => parseFloat(d.Waktu));
       const target = getTarget(atlet, jarak);
@@ -223,333 +193,242 @@ const filtered = dataLatihan.filter(item =>
         plugins: [ChartDataLabels]
       };
 
-      
-function renderBarChart() {
-  const startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : null;
-  const endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : null;
-
-  const atletList = getUniqueOptions(dataLatihan, "Nama");
-
-  const capaiData = atletList.map(nama => {
-    const atletData = dataLatihan.filter(d =>
-      d.Nama === nama &&
-      parseFloat(d.Waktu) > 0 &&
-      isInDateRange(d.Tanggal, startDate, endDate)
-    );
-
-    let totalCapai = 0;
-    for (const d of atletData) {
-      const target = getTarget(d.Nama, d.Jarak);
-      if (parseFloat(d.Waktu) <= target) totalCapai++;
-    }
-
-    return { nama, capai: totalCapai };
-  });
-
-  const labels = capaiData.map(d => d.nama);
-  const values = capaiData.map(d => d.capai);
-
-  const ctx = document.getElementById("chartBarCapai").getContext("2d");
-  if (window.barChart) window.barChart.destroy();
-
-  window.barChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Jumlah Capaian Target',
-        data: values,
-        backgroundColor: '#22c55e'
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        datalabels: {
-          anchor: 'end',
-          align: 'top',
-          color: '#000',
-          formatter: val => val
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: 'Jumlah Capaian' }
-        },
-        x: {
-          title: { display: true, text: 'Nama Atlet' }
-        }
-      }
-    },
-    plugins: [ChartDataLabels]
-  });
-}
-
-
-  
-
-
-
-function renderHeatmap(atlet) {
-  const container = document.getElementById("heatmapContainer");
-  container.innerHTML = "";
-  const bulan = document.getElementById("bulanAbsensi").value;
-
-  const bulanPrefix = bulan + "-";
-  const hariMap = {};
-
-  dataAbsensi.forEach(item => {
-    if (
-      item.Nama === atlet &&
-      item.Status.toLowerCase() === "hadir" &&
-      item.Tanggal.startsWith(bulanPrefix)
-    ) {
-      hariMap[item.Tanggal] = true;
-    }
-  });
-
-  const year = parseInt(bulan.split("-")[0]);
-  const month = parseInt(bulan.split("-")[1]) - 1;
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  container.style.gridTemplateColumns = `repeat(${daysInMonth}, 1rem)`;
-  for (let i = 1; i <= daysInMonth; i++) {
-    const tanggal = `${bulan}-${String(i).padStart(2, "0")}`;
-    const hadir = hariMap[tanggal];
-    container.innerHTML += `
-      <div title="${tanggal}" class="w-4 h-4 rounded ${
-        hadir ? "bg-green-600" : "bg-gray-200"
-      }"></div>
-    `;
-  }
-}
-
-
-
-function groupByPeriod(items, period) {
-  const buckets = {};
-  for (const item of items) {
-    const d = new Date(item.Tanggal);
-    let key;
-    if (period === 'monthly') {
-      key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}`;
-    } else {
-      // weekly (start on Sunday)
-      const start = new Date(d);
-      start.setDate(d.getDate() - d.getDay());
-      key = start.toISOString().split("T")[0];
-    }
-    if (!buckets[key]) buckets[key] = [];
-    buckets[key].push(parseFloat(item.Waktu));
-  }
-  return buckets;
-}
-
-function renderStatistikPeriodik(atlet, jarak, period='weekly') {
-  const startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : null;
-  const endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : null;
-
-  const filtered = dataLatihan.filter(item =>
-    item.Nama === atlet &&
-    item.Jarak === jarak &&
-    parseFloat(item.Waktu) > 0 &&
-    isInDateRange(item.Tanggal, startDate, endDate)
-  );
-
-  const buckets = groupByPeriod(filtered, period);
-  const labels = Object.keys(buckets).sort();
-  const jumlahLatihan = labels.map(k => buckets[k].length);
-  const rataWaktu = labels.map(k => {
-    const arr = buckets[k];
-    const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
-    return Number(avg.toFixed(2));
-  });
-
-  const ctx = document.getElementById("chartStatistikMingguan").getContext("2d");
-  if (window.statistikChart) window.statistikChart.destroy();
-
-  window.statistikChart = new Chart(ctx, {
-    data: {
-      labels,
-      datasets: [
-        { type: 'bar', label: 'Jumlah Latihan', data: jumlahLatihan, backgroundColor: '#0f766e' },
-        { type: 'line', label: 'Rata-rata Waktu (s)', data: rataWaktu, borderColor: '#334155', backgroundColor: '#94a3b8', tension: 0.35, yAxisID: 'y1' }
-      ]
-    },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { position: 'top' } },
-      scales: {
-        y: { type: 'linear', position: 'left', title: { display: true, text: 'Jumlah Latihan' } },
-        y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Rata-rata Waktu (s)' } }
-      }
-    }
-  });
-}
-
-// Toggle handlers
-function initStatistikToggle(atlet, jarak) {
-  const btnWeekly = document.getElementById('btnWeekly');
-  const btnMonthly = document.getElementById('btnMonthly');
-  function setActive(which) {
-    if (!btnWeekly || !btnMonthly) return;
-    if (which === 'weekly') {
-      btnWeekly.classList.add('bg-white','shadow');
-      btnMonthly.classList.remove('bg-white','shadow');
-    } else {
-      btnMonthly.classList.add('bg-white','shadow');
-      btnWeekly.classList.remove('bg-white','shadow');
-    }
-  }
-  btnWeekly?.addEventListener('click', () => { setActive('weekly'); renderStatistikPeriodik(atlet, jarak, 'weekly'); });
-  btnMonthly?.addEventListener('click', () => { setActive('monthly'); renderStatistikPeriodik(atlet, jarak, 'monthly'); });
-  setActive('weekly');
-}
-
-
-function renderStatistikMingguan(atlet, jarak) {
-  const startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : null;
-  const endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : null;
-
-  const filtered = dataLatihan.filter(item =>
-    item.Nama === atlet &&
-    item.Jarak === jarak &&
-    parseFloat(item.Waktu) > 0 &&
-    isInDateRange(item.Tanggal, startDate, endDate)
-  );
-
-  const mingguData = {};
-
-  for (const item of filtered) {
-    const date = new Date(item.Tanggal);
-    const mingguAwal = new Date(date);
-    mingguAwal.setDate(date.getDate() - date.getDay()); // Minggu (start of week)
-
-    const key = mingguAwal.toISOString().split("T")[0];
-    if (!mingguData[key]) mingguData[key] = [];
-
-    mingguData[key].push(parseFloat(item.Waktu));
-  }
-
-  const labels = Object.keys(mingguData).sort();
-  const jumlahLatihan = labels.map(k => mingguData[k].length);
-  const rataWaktu = labels.map(k => {
-    const total = mingguData[k].reduce((a, b) => a + b, 0);
-    return (total / mingguData[k].length).toFixed(2);
-  });
-
-  const ctx = document.getElementById("chartStatistikMingguan").getContext("2d");
-  if (window.statistikChart) window.statistikChart.destroy();
-
-  window.statistikChart = new Chart(ctx, {
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          type: 'bar',
-          label: 'Jumlah Latihan',
-          data: jumlahLatihan,
-          backgroundColor: '#6366f1'
-        },
-        {
-          type: 'line',
-          label: 'Rata-rata Waktu (s)',
-          data: rataWaktu,
-          borderColor: '#f59e0b',
-          backgroundColor: '#fcd34d',
-          tension: 0.4,
-          yAxisID: 'y1'
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      interaction: {
-        mode: 'index',
-        intersect: false
-      },
-      stacked: false,
-      plugins: {
-        legend: { position: 'top' }
-      },
-      scales: {
-        y: {
-          type: 'linear',
-          position: 'left',
-          title: { display: true, text: 'Jumlah Latihan' }
-        },
-        y1: {
-          type: 'linear',
-          position: 'right',
-          grid: { drawOnChartArea: false },
-          title: { display: true, text: 'Rata-rata Waktu (s)' }
-        }
-      }
-    }
-  });
-}
-
-
-function updateProgressKehadiran(atlet) {
-  const bulan = document.getElementById("bulanAbsensi").value; // format: yyyy-mm
-  const bulanPrefix = bulan + "-";
-
-  const hadirBulanIni = dataAbsensi.filter(item =>
-    item.Nama === atlet &&
-    item.Status.toLowerCase() === "hadir" &&
-    item.Tanggal.startsWith(bulanPrefix)
-  );
-
-  const totalHari = 20; // asumsi 20 hari latihan
-  const hadir = hadirBulanIni.length;
-  const persen = Math.min((hadir / totalHari * 100).toFixed(0), 100);
-
-  const bar = document.getElementById("progressKehadiranBar");
-  const text = document.getElementById("progressKehadiranText");
-
-  bar.style.width = persen + "%";
-  bar.textContent = persen + "%";
-  text.textContent = `${hadir}/${totalHari} hari hadir di bulan ${bulan}`;
-}
-
-
-function updateProgressBar(atlet, jarak) {
-  const startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : null;
-  const endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : null;
-
-  const filtered = dataLatihan.filter(item =>
-    item.Nama === atlet &&
-    item.Jarak === jarak &&
-    parseFloat(item.Waktu) > 0 &&
-    isInDateRange(item.Tanggal, startDate, endDate)
-  );
-
-  const target = getTarget(atlet, jarak);
-  const jumlahCapai = filtered.filter(d => parseFloat(d.Waktu) <= target).length;
-  const total = filtered.length;
-
-  const persen = total > 0 ? (jumlahCapai / total * 100).toFixed(0) : 0;
-  const progressBar = document.getElementById("progressBar");
-  const progressText = document.getElementById("progressText");
-
-  progressBar.style.width = persen + "%";
-  progressBar.textContent = persen + "%";
-  progressText.textContent = jumlahCapai + "/" + total + " latihan capai target";
-}
-
-
-  if (chart) chart.destroy();
+      if (chart) chart.destroy();
       chart = new Chart(document.getElementById("chartWaktu"), config);
+    }
+
+    function renderBarChart() {
+      const atletList = getUniqueOptions(dataLatihan, "Nama");
+
+      const capaiData = atletList.map(nama => {
+        const atletData = dataLatihan.filter(d =>
+          d.Nama === nama && parseFloat(d.Waktu) > 0
+        );
+
+        let totalCapai = 0;
+        for (const d of atletData) {
+          const target = getTarget(d.Nama, d.Jarak);
+          if (parseFloat(d.Waktu) <= target) totalCapai++;
+        }
+
+        return { nama, capai: totalCapai };
+      });
+
+      const labels = capaiData.map(d => d.nama);
+      const values = capaiData.map(d => d.capai);
+
+      const ctx = document.getElementById("chartBarCapai").getContext("2d");
+      if (window.barChart) window.barChart.destroy();
+
+      window.barChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Jumlah Capaian Target',
+            data: values,
+            backgroundColor: '#22c55e'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              anchor: 'end',
+              align: 'top',
+              color: '#000',
+              formatter: val => val
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Jumlah Capaian' }
+            },
+            x: {
+              title: { display: true, text: 'Nama Atlet' }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+    }
+
+    function renderHeatmap(atlet) {
+      const container = document.getElementById("heatmapContainer");
+      container.innerHTML = "";
+      
+      // Gunakan bulan terakhir dari data sebagai default
+      const dates = dataAbsensi
+        .filter(item => item.Nama === atlet && item.Status.toLowerCase() === "hadir")
+        .map(item => item.Tanggal);
+      
+      if (dates.length === 0) return;
+      
+      // Ambil bulan terakhir dari data
+      const lastDate = new Date(dates.sort()[dates.length - 1]);
+      const bulan = `${lastDate.getFullYear()}-${String(lastDate.getMonth() + 1).padStart(2, "0")}`;
+      
+      const hariMap = {};
+      dataAbsensi.forEach(item => {
+        if (
+          item.Nama === atlet &&
+          item.Status.toLowerCase() === "hadir" &&
+          item.Tanggal.startsWith(bulan)
+        ) {
+          hariMap[item.Tanggal] = true;
+        }
+      });
+
+      const year = parseInt(bulan.split("-")[0]);
+      const month = parseInt(bulan.split("-")[1]) - 1;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      container.style.gridTemplateColumns = `repeat(${daysInMonth}, 1rem)`;
+      for (let i = 1; i <= daysInMonth; i++) {
+        const tanggal = `${bulan}-${String(i).padStart(2, "0")}`;
+        const hadir = hariMap[tanggal];
+        container.innerHTML += `
+          <div title="${tanggal}" class="w-4 h-4 rounded ${
+            hadir ? "bg-green-600" : "bg-gray-200"
+          }"></div>
+        `;
+      }
+    }
+
+    function groupByPeriod(items, period) {
+      const buckets = {};
+      for (const item of items) {
+        const d = new Date(item.Tanggal);
+        let key;
+        if (period === 'monthly') {
+          key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}`;
+        } else {
+          // weekly (start on Sunday)
+          const start = new Date(d);
+          start.setDate(d.getDate() - d.getDay());
+          key = start.toISOString().split("T")[0];
+        }
+        if (!buckets[key]) buckets[key] = [];
+        buckets[key].push(parseFloat(item.Waktu));
+      }
+      return buckets;
+    }
+
+    function renderStatistikPeriodik(atlet, jarak, period='weekly') {
+      const filtered = dataLatihan.filter(item =>
+        item.Nama === atlet &&
+        item.Jarak === jarak &&
+        parseFloat(item.Waktu) > 0
+      );
+
+      const buckets = groupByPeriod(filtered, period);
+      const labels = Object.keys(buckets).sort();
+      const jumlahLatihan = labels.map(k => buckets[k].length);
+      const rataWaktu = labels.map(k => {
+        const arr = buckets[k];
+        const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+        return Number(avg.toFixed(2));
+      });
+
+      const ctx = document.getElementById("chartStatistikMingguan").getContext("2d");
+      if (window.statistikChart) window.statistikChart.destroy();
+
+      window.statistikChart = new Chart(ctx, {
+        data: {
+          labels,
+          datasets: [
+            { type: 'bar', label: 'Jumlah Latihan', data: jumlahLatihan, backgroundColor: '#0f766e' },
+            { type: 'line', label: 'Rata-rata Waktu (s)', data: rataWaktu, borderColor: '#334155', backgroundColor: '#94a3b8', tension: 0.35, yAxisID: 'y1' }
+          ]
+        },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          plugins: { legend: { position: 'top' } },
+          scales: {
+            y: { type: 'linear', position: 'left', title: { display: true, text: 'Jumlah Latihan' } },
+            y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Rata-rata Waktu (s)' } }
+          }
+        }
+      });
+    }
+
+    // Toggle handlers
+    function initStatistikToggle(atlet, jarak) {
+      const btnWeekly = document.getElementById('btnWeekly');
+      const btnMonthly = document.getElementById('btnMonthly');
+      function setActive(which) {
+        if (!btnWeekly || !btnMonthly) return;
+        if (which === 'weekly') {
+          btnWeekly.classList.add('bg-white','shadow');
+          btnMonthly.classList.remove('bg-white','shadow');
+        } else {
+          btnMonthly.classList.add('bg-white','shadow');
+          btnWeekly.classList.remove('bg-white','shadow');
+        }
+      }
+      btnWeekly?.addEventListener('click', () => { setActive('weekly'); renderStatistikPeriodik(atlet, jarak, 'weekly'); });
+      btnMonthly?.addEventListener('click', () => { setActive('monthly'); renderStatistikPeriodik(atlet, jarak, 'monthly'); });
+      setActive('weekly');
+    }
+
+    function updateProgressKehadiran(atlet) {
+      // Gunakan bulan terakhir dari data sebagai default
+      const dates = dataAbsensi
+        .filter(item => item.Nama === atlet && item.Status.toLowerCase() === "hadir")
+        .map(item => item.Tanggal);
+      
+      if (dates.length === 0) return;
+      
+      // Ambil bulan terakhir dari data
+      const lastDate = new Date(dates.sort()[dates.length - 1]);
+      const bulan = `${lastDate.getFullYear()}-${String(lastDate.getMonth() + 1).padStart(2, "0")}`;
+      
+      const hadirBulanIni = dataAbsensi.filter(item =>
+        item.Nama === atlet &&
+        item.Status.toLowerCase() === "hadir" &&
+        item.Tanggal.startsWith(bulan)
+      );
+
+      const totalHari = 20; // asumsi 20 hari latihan
+      const hadir = hadirBulanIni.length;
+      const persen = Math.min((hadir / totalHari * 100).toFixed(0), 100);
+
+      const bar = document.getElementById("progressKehadiranBar");
+      const text = document.getElementById("progressKehadiranText");
+
+      bar.style.width = persen + "%";
+      bar.textContent = persen + "%";
+      text.textContent = `${hadir}/${totalHari} hari hadir di bulan ${bulan}`;
+    }
+
+    function updateProgressBar(atlet, jarak) {
+      const filtered = dataLatihan.filter(item =>
+        item.Nama === atlet &&
+        item.Jarak === jarak &&
+        parseFloat(item.Waktu) > 0
+      );
+
+      const target = getTarget(atlet, jarak);
+      const jumlahCapai = filtered.filter(d => parseFloat(d.Waktu) <= target).length;
+      const total = filtered.length;
+
+      const persen = total > 0 ? (jumlahCapai / total * 100).toFixed(0) : 0;
+      const progressBar = document.getElementById("progressBar");
+      const progressText = document.getElementById("progressText");
+
+      progressBar.style.width = persen + "%";
+      progressBar.textContent = persen + "%";
+      progressText.textContent = jumlahCapai + "/" + total + " latihan capai target";
     }
 
     async function init() {
       const [latihan, target, absensi] = await Promise.all([
         fetchData("DataLatihan"),
         fetchData("TargetWaktu"),
-    fetchData("Absensi")
+        fetchData("Absensi")
       ]);
       dataLatihan = latihan;
       targetWaktu = target;
@@ -566,19 +445,16 @@ function updateProgressBar(atlet, jarak) {
 
       function updateChart() {
         renderChart(namaDropdown.value, jarakDropdown.value);
-renderBarChart();
-updateProgressBar(namaDropdown.value, jarakDropdown.value);
-updateProgressKehadiran(namaDropdown.value);
-renderHeatmap(namaDropdown.value);
-renderStatistikPeriodik(namaDropdown.value, jarakDropdown.value, "weekly");
-initStatistikToggle(namaDropdown.value, jarakDropdown.value);
+        renderBarChart();
+        updateProgressBar(namaDropdown.value, jarakDropdown.value);
+        updateProgressKehadiran(namaDropdown.value);
+        renderHeatmap(namaDropdown.value);
+        renderStatistikPeriodik(namaDropdown.value, jarakDropdown.value, "weekly");
+        initStatistikToggle(namaDropdown.value, jarakDropdown.value);
       }
 
       namaDropdown.addEventListener("change", updateChart);
       jarakDropdown.addEventListener("change", updateChart);
-document.getElementById("startDate").addEventListener("change", updateChart);
-document.getElementById("endDate").addEventListener("change", updateChart);
-document.getElementById("bulanAbsensi").addEventListener("change", updateChart);
 
       updateChart(); // initial load
     }
