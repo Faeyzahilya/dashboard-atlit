@@ -32,13 +32,25 @@
   </div>
 
   <!-- Grafik -->
+
+  <div class="bg-white p-4 rounded shadow mb-4">
+    <canvas id="chartWaktu" height="100"></canvas>
+
 <!-- Grafik Bar Capaian Target Per Atlet -->
-<div class="bg-white p-4 rounded shadow mb-4">
+
+<!-- Progress Bar Target Pribadi -->
+<div id="progressContainer" class="bg-white p-4 rounded shadow mb-4">
+  <h2 class="text-lg font-semibold mb-2">📊 Progress Capaian Target</h2>
+  <div class="w-full bg-gray-200 rounded-full h-6">
+    <div id="progressBar" class="bg-blue-500 h-6 rounded-full text-white text-sm text-center" style="width: 0%">0%</div>
+  </div>
+  <div id="progressText" class="text-sm text-gray-600 mt-1 text-center">0/0 latihan capai target</div>
+</div>
+
+<div class="bg-white p-4 rounded shadow mb-4 mt-6">
   <h2 class="text-lg font-semibold mb-2">🎯 Total Capaian Target per Atlet</h2>
   <canvas id="chartBarCapai" height="100"></canvas>
 </div>
-  <div class="bg-white p-4 rounded shadow mb-4">
-    <canvas id="chartWaktu" height="100"></canvas>
   </div>
 
   <footer class="mt-6 text-center text-sm text-gray-500">
@@ -223,6 +235,32 @@ function renderBarChart() {
 }
 
 
+  
+function updateProgressBar(atlet, jarak) {
+  const startDate = document.getElementById("startDate").value;
+  const endDate = document.getElementById("endDate").value;
+
+  const filtered = dataLatihan.filter(item =>
+    item.Nama === atlet &&
+    item.Jarak === jarak &&
+    parseFloat(item.Waktu) > 0 &&
+    isInDateRange(item.Tanggal, startDate, endDate)
+  );
+
+  const target = getTarget(atlet, jarak);
+  const jumlahCapai = filtered.filter(d => parseFloat(d.Waktu) <= target).length;
+  const total = filtered.length;
+
+  const persen = total > 0 ? (jumlahCapai / total * 100).toFixed(0) : 0;
+  const progressBar = document.getElementById("progressBar");
+  const progressText = document.getElementById("progressText");
+
+  progressBar.style.width = persen + "%";
+  progressBar.textContent = persen + "%";
+  progressText.textContent = jumlahCapai + "/" + total + " latihan capai target";
+}
+
+
   if (chart) chart.destroy();
       chart = new Chart(document.getElementById("chartWaktu"), config);
     }
@@ -247,6 +285,7 @@ function renderBarChart() {
       function updateChart() {
         renderChart(namaDropdown.value, jarakDropdown.value);
 renderBarChart();
+updateProgressBar(namaDropdown.value, jarakDropdown.value);
       }
 
       namaDropdown.addEventListener("change", updateChart);
