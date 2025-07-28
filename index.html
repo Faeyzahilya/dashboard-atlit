@@ -8,7 +8,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1/dist/chartjs-plugin-annotation.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-
   <script>
     const ChartAnnotation = window['chartjs-plugin-annotation'];
     Chart.register(ChartAnnotation);
@@ -21,11 +20,16 @@
     <h1 class="text-2xl font-bold text-blue-600">🏅 Dashboard Atlit Century</h1>
   </header>
 
+  <!-- Statistik Ringkasan -->
+  <div id="statCards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-center"></div>
+
+  <!-- Dropdown Filter -->
   <div class="flex flex-wrap gap-4 mb-4">
     <select id="namaAtlet" class="p-2 border rounded w-1/3"></select>
     <select id="jarak" class="p-2 border rounded w-1/3"></select>
   </div>
 
+  <!-- Grafik -->
   <div class="bg-white p-4 rounded shadow mb-4">
     <canvas id="chartWaktu" height="100"></canvas>
   </div>
@@ -64,6 +68,27 @@
       return match ? parseFloat(match.Target) : 25.0;
     }
 
+    function showStatistik(data, target) {
+      const total = data.length;
+      const tercepat = Math.min(...data);
+      const rata2 = data.reduce((a, b) => a + b, 0) / total;
+      const jumlahCapaiTarget = data.filter(v => v <= target).length;
+
+      const cardData = [
+        { label: "👟 Total Latihan", value: total },
+        { label: "🏁 Waktu Tercepat", value: tercepat.toFixed(2) + "s" },
+        { label: "📈 Rata-rata", value: rata2.toFixed(2) + "s" },
+        { label: "🎯 Capaian Target", value: jumlahCapaiTarget + "x" },
+      ];
+
+      const container = document.getElementById("statCards");
+      container.innerHTML = cardData.map(c => `
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-sm text-gray-500">${c.label}</div>
+          <div class="text-xl font-bold text-blue-600">${c.value}</div>
+        </div>`).join("");
+    }
+
     function renderChart(atlet, jarak) {
       const filtered = dataLatihan.filter(item =>
         item.Nama === atlet && item.Jarak === jarak && parseFloat(item.Waktu) > 0);
@@ -71,6 +96,8 @@
       const waktu = filtered.map(d => parseFloat(d.Waktu));
       const target = getTarget(atlet, jarak);
       const pointColors = waktu.map(w => (w <= target ? 'green' : 'orange'));
+
+      showStatistik(waktu, target);
 
       const data = {
         labels,
@@ -93,22 +120,6 @@
           responsive: true,
           plugins: {
             legend: { display: true },
-            annotation: {
-              annotations: {
-                line1: {
-                  type: 'line',
-                  yMin: target,
-                  yMax: target,
-                  borderColor: 'red',
-                  borderWidth: 2,
-                  label: {
-                    content: `Target: ${target.toFixed(1)}s`,
-                    enabled: true,
-                    position: "end"
-                  }
-                }
-              }
-            },
             datalabels: {
               color: '#000',
               anchor: 'end',
@@ -157,7 +168,7 @@
       namaDropdown.addEventListener("change", updateChart);
       jarakDropdown.addEventListener("change", updateChart);
 
-      updateChart(); // render grafik setelah semua data siap
+      updateChart(); // initial load
     }
 
     init();
