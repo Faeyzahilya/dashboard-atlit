@@ -14,10 +14,10 @@
     Chart.register(ChartDataLabels);
   </script>
 </head>
-<body class="bg-gray-100 text-gray-800 p-4">
+<body class="bg-gray-50 text-gray-900 p-6 font-sans space-y-4">
 
   <header class="mb-6">
-    <h1 class="text-2xl font-bold text-blue-600">🏅 Dashboard Atlit Century</h1>
+    <h1 class="text-3xl font-bold text-blue-700 flex items-center gap-2">🏅 Dashboard Atlit Century</h1>
   </header>
 
   <!-- Statistik Ringkasan -->
@@ -80,7 +80,17 @@
 </div>
   </div>
 
-  <footer class="mt-6 text-center text-sm text-gray-500">
+  
+<!-- Heatmap Latihan -->
+<div class="bg-white p-4 rounded shadow mb-4">
+  <h2 class="text-lg font-semibold mb-2">🔥 Heatmap Kehadiran Latihan</h2>
+  <div id="heatmapContainer" class="grid grid-cols-53 gap-1 text-[10px]">
+    <!-- Isi heatmap akan dibuat dinamis oleh JavaScript -->
+  </div>
+  <div class="text-xs text-center text-gray-500 mt-2">*Tiap kotak = 1 hari latihan</div>
+</div>
+
+<footer class="mt-6 text-center text-sm text-gray-500">
     &copy; 2025 Atlit Century. All rights reserved.
   </footer>
 
@@ -266,6 +276,41 @@ function renderBarChart() {
   
 
 
+
+function renderHeatmap(atlet) {
+  const container = document.getElementById("heatmapContainer");
+  container.innerHTML = "";
+  const bulan = document.getElementById("bulanAbsensi").value;
+
+  const bulanPrefix = bulan + "-";
+  const hariMap = {};
+
+  dataAbsensi.forEach(item => {
+    if (
+      item.Nama === atlet &&
+      item.Status.toLowerCase() === "hadir" &&
+      item.Tanggal.startsWith(bulanPrefix)
+    ) {
+      hariMap[item.Tanggal] = true;
+    }
+  });
+
+  const year = parseInt(bulan.split("-")[0]);
+  const month = parseInt(bulan.split("-")[1]) - 1;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let i = 1; i <= daysInMonth; i++) {
+    const tanggal = `${bulan}-${String(i).padStart(2, "0")}`;
+    const hadir = hariMap[tanggal];
+    container.innerHTML += `
+      <div title="${tanggal}" class="w-4 h-4 rounded ${
+        hadir ? "bg-green-600" : "bg-gray-200"
+      }"></div>
+    `;
+  }
+}
+
+
 function renderStatistikMingguan(atlet, jarak) {
   const startDate = document.getElementById("startDate").value;
   const endDate = document.getElementById("endDate").value;
@@ -425,6 +470,7 @@ function updateProgressBar(atlet, jarak) {
 renderBarChart();
 updateProgressBar(namaDropdown.value, jarakDropdown.value);
 updateProgressKehadiran(namaDropdown.value);
+renderHeatmap(namaDropdown.value);
 renderStatistikMingguan(namaDropdown.value, jarakDropdown.value);
       }
 
