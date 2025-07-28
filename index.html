@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Atlit Century</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nouislider@15.6.1/distribute/nouislider.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/nouislider@15.6.1/distribute/nouislider.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    canvas { background-color: white; border-radius: 10px; }
+    #slider { margin-top: 1rem; }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="max-w-4xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold text-center text-blue-500 mb-8">📊 Dashboard Performa Atlit – 200m</h1>
+
+    <!-- Filter -->
+    <div class="flex flex-wrap justify-center gap-4 mb-6">
+      <select id="selectNama" class="p-2 border rounded">
+        <option value="Aurora">Aurora</option>
+        <!-- Tambah nama lain di sini -->
+      </select>
+      <select id="selectJarak" class="p-2 border rounded">
+        <option value="200m">200m</option>
+      </select>
+    </div>
+
+    <!-- Grafik -->
+    <div class="bg-white shadow p-6 rounded-xl">
+      <canvas id="grafikPerforma" height="300"></canvas>
+      <div id="slider"></div>
+    </div>
+
+    <p class="text-center text-sm text-gray-500 mt-4">Sumber: Google Sheets</p>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('grafikPerforma').getContext('2d');
+
+    const dataLatihan = [
+      { tanggal: '2025-07-01', waktu: 26.42 },
+      { tanggal: '2025-07-03', waktu: 25.10 },
+      { tanggal: '2025-07-07', waktu: 27.36 },
+      { tanggal: '2025-07-09', waktu: 24.40 },
+      { tanggal: '2025-07-16', waktu: 26.12 }
+    ];
+
+    const targetWaktu = 25.0;
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: dataLatihan.map(d => d.tanggal),
+        datasets: [{
+          label: 'Performa 200m',
+          data: dataLatihan.map(d => d.waktu),
+          borderColor: '#3B82F6',
+          backgroundColor: '#3B82F6',
+          tension: 0.4,
+          pointBackgroundColor: dataLatihan.map(d => d.waktu <= targetWaktu ? 'green' : 'orange'),
+          pointRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true },
+          tooltip: { callbacks: { label: ctx => `${ctx.raw.toFixed(2)}s` } },
+          annotation: {
+            annotations: {
+              line1: {
+                type: 'line',
+                yMin: targetWaktu,
+                yMax: targetWaktu,
+                borderColor: 'red',
+                borderWidth: 2,
+                label: {
+                  content: `Target: ${targetWaktu}s`,
+                  enabled: true,
+                  position: 'end'
+                }
+              }
+            }
+          },
+          datalabels: {
+            color: '#000',
+            align: 'top',
+            formatter: (value) => `${value.toFixed(2)}s`
+          }
+        },
+        scales: {
+          y: {
+            title: { display: true, text: 'Waktu (detik)' }
+          },
+          x: {
+            title: { display: true, text: 'Tanggal' }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+  </script>
+</body>
+</html>
