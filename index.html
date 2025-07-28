@@ -583,9 +583,6 @@ document.getElementById("endDate").addEventListener("change", updateChart);
 document.getElementById("bulanAbsensi").addEventListener("change", updateChart);
 
       
-const namaDropdown = document.getElementById("namaAtlet");
-const jarakDropdown = document.getElementById("jarak");
-
 // ✅ SET default value agar progress kehadiran muncul
 if (atletList.length && jarakList.length) {
   namaDropdown.value = atletList[0];
