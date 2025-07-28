@@ -5,15 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Atlit Century</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0/dist/chartjs-plugin-annotation.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-
-  <!-- ✅ REGISTER PLUGINS -->
-  <script>
-    Chart.register(ChartDataLabels);
-    Chart.register(window['chartjs-plugin-annotation']);
-  </script>
 </head>
 <body class="bg-gray-100 text-gray-800 p-4">
 
@@ -35,6 +29,9 @@
   </footer>
 
   <script>
+    Chart.register(ChartDataLabels);
+    Chart.register(window['chartjs-plugin-annotation']);
+
     const apiBase = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec";
 
     let dataLatihan = [];
