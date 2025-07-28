@@ -37,14 +37,15 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec?sheet=DataLatihan";
+    const API_BASE = "https://script.google.com/macros/s/AKfycbwpAm3ve8FUdaZZM6b9Xnm-RVkWX_POlKCAvJtuvYLLP2d3lKgFp1Q5etMPi8Iyd8slfw/exec";
 
     let chart;
+    let allData = [];
+    let targetData = [];
 
-    async function fetchData() {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      return data.filter(row => row["Waktu"] > 0); // abaikan waktu 0.0
+    async function fetchSheet(sheet) {
+      const res = await fetch(`${API_BASE}?sheet=${sheet}`);
+      return await res.json();
     }
 
     function getUniqueValues(data, key) {
@@ -62,11 +63,16 @@
       jarakSelect.innerHTML = jarakList.map(j => `<option value="${j}">${j}</option>`).join("");
     }
 
+    function getTargetWaktu(nama, jarak) {
+      const found = targetData.find(d => d.Nama === nama && d.Jarak === jarak);
+      return found ? parseFloat(found.Target) : 25.0;
+    }
+
     function renderChart(data, nama, jarak) {
-      const atletData = data.filter(d => d.Nama === nama && d.Jarak === jarak);
+      const atletData = data.filter(d => d.Nama === nama && d.Jarak === jarak && parseFloat(d.Waktu) > 0);
       const labels = atletData.map(d => d.Tanggal);
       const values = atletData.map(d => parseFloat(d.Waktu));
-      const target = 25.0; // contoh target fix dulu, nanti bisa dari sheet TargetWaktu
+      const target = getTargetWaktu(nama, jarak);
 
       if (chart) chart.destroy();
 
@@ -130,16 +136,17 @@
     }
 
     async function init() {
-      const data = await fetchData();
-      updateDropdowns(data);
+      allData = await fetchSheet("DataLatihan");
+      targetData = await fetchSheet("TargetWaktu");
+      updateDropdowns(allData);
 
       const namaSelect = document.getElementById("selectNama");
       const jarakSelect = document.getElementById("selectJarak");
 
-      namaSelect.addEventListener("change", () => renderChart(data, namaSelect.value, jarakSelect.value));
-      jarakSelect.addEventListener("change", () => renderChart(data, namaSelect.value, jarakSelect.value));
+      namaSelect.addEventListener("change", () => renderChart(allData, namaSelect.value, jarakSelect.value));
+      jarakSelect.addEventListener("change", () => renderChart(allData, namaSelect.value, jarakSelect.value));
 
-      renderChart(data, namaSelect.value, jarakSelect.value);
+      renderChart(allData, namaSelect.value, jarakSelect.value);
     }
 
     init();
