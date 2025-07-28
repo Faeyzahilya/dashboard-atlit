@@ -218,29 +218,6 @@
                 font: {
                   size: window.innerWidth < 640 ? 10 : 12
                 }
-              },
-              annotation: {
-                annotations: {
-                  targetLine: {
-                    type: 'line',
-                    yMin: target,
-                    yMax: target,
-                    borderColor: 'red',
-                    borderWidth: 2,
-                    borderDash: [6, 6],
-                    label: {
-                      display: true,
-                      content: `Target (${target}s)`,
-                      color: 'red',
-                      font: {
-                        style: 'bold',
-                        size: 10
-                      },
-                      position: 'end',
-                      backgroundColor: 'transparent'
-                    }
-                  }
-                }
               }
             },
             scales: {
@@ -318,7 +295,7 @@
               }
             }
           },
-          plugins: [ChartDataLabels]
+          plugins: [ChartDataLabels, ChartAnnotation]
         });
       }
 
